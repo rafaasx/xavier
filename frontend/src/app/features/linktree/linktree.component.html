@@ -1,0 +1,26 @@
+<section class="linktree">
+  <div class="linktree__card">
+    <div class="avatar">RX</div>
+    <span class="eyebrow">Página rápida de acesso</span>
+    <h1>{{ brand.name }}</h1>
+    <p>{{ brand.title }} • {{ brand.subtitle }}</p>
+  </div>
+
+  <div class="linktree__list">
+    <a class="link" routerLink="/landing">
+      <strong>Site principal</strong>
+      <span>Voltar para a landing estática</span>
+    </a>
+    <a class="link" routerLink="/store">
+      <strong>Loja</strong>
+      <span>Espaço reservado para produtos</span>
+    </a>
+    @for (link of socialLinks; track link.label) {
+      <a class="link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+        <strong>{{ link.label }}</strong>
+        <span>Abrir perfil oficial</span>
+      </a>
+    }
+  </div>
+</section>
+
