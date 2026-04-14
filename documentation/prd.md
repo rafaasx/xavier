@@ -8,7 +8,7 @@
 **Stack definida:**
 
 * Frontend: Angular (última versão)
-* Backend: .NET Core 10 (Web API)
+* Backend: .NET Core 10 (Web API) Minimal API
 * Banco: PostgreSQL
 * Arquitetura: Modular Monolith + Vertical Slice
 
@@ -374,6 +374,7 @@ Página pública simples com links
 
 * Modular Monolith
 * Organização por feature
+* Minimal API
 
 ## Frontend
 
