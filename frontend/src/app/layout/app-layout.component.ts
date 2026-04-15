@@ -31,7 +31,9 @@ export class AppLayoutComponent {
     ),
     { initialValue: this.router.url },
   );
-  protected readonly showHeader = computed(() => !this.currentUrl().startsWith('/linktree'));
+  protected readonly showHeader = computed(
+    () => !this.currentUrl().startsWith('/links') && !this.currentUrl().startsWith('/linktree'),
+  );
 
   constructor(protected readonly theme: ThemeService) {}
 

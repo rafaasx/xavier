@@ -13,9 +13,14 @@ export const routes: Routes = [
     redirectTo: '',
   },
   {
-    path: 'linktree',
+    path: 'links',
     loadChildren: () =>
       import('./features/linktree/linktree.routes').then((m) => m.LINKTREE_ROUTES),
+  },
+  {
+    path: 'linktree',
+    pathMatch: 'full',
+    redirectTo: 'links',
   },
   {
     path: 'store',
