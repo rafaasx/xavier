@@ -32,63 +32,11 @@ body {
   margin: 0;
   min-height: 100vh;
   position: relative;
-  isolation: isolate;
   overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--body-font);
   text-rendering: optimizeLegibility;
-}
-
-:root[data-theme='dark'] body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.18;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(127, 214, 139, 0.14), transparent 18%),
-    radial-gradient(circle at 82% 12%, rgba(46, 164, 79, 0.16), transparent 20%),
-    radial-gradient(circle at 50% 80%, rgba(127, 214, 139, 0.08), transparent 24%),
-    repeating-linear-gradient(
-      180deg,
-      rgba(127, 214, 139, 0.025) 0,
-      rgba(127, 214, 139, 0.025) 1px,
-      transparent 1px,
-      transparent 28px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(127, 214, 139, 0.02) 0,
-      rgba(127, 214, 139, 0.02) 1px,
-      transparent 1px,
-      transparent 34px
-    );
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-  mix-blend-mode: screen;
-  filter: blur(1px) saturate(1.15);
-  animation: matrix-drift 36s ease-in-out infinite alternate;
-}
-
-:root[data-theme='dark'] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.08;
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(127, 214, 139, 0.05) 50%, transparent 100%),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 7rem,
-      rgba(127, 214, 139, 0.025) 7rem,
-      rgba(127, 214, 139, 0.025) 7.04rem
-    );
-  mix-blend-mode: screen;
-  animation: matrix-glow 18s ease-in-out infinite;
 }
 
 body > app-root {
@@ -130,40 +78,8 @@ h4 {
   color: var(--bg);
 }
 
-@keyframes matrix-drift {
-  from {
-    background-position:
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0;
-  }
-
-  to {
-    background-position:
-      0 0,
-      0 0,
-      0 40px,
-      0 72px,
-      0 96px;
-  }
-}
-
-@keyframes matrix-glow {
-  0%,
-  100% {
-    opacity: 0.06;
-  }
-
-  50% {
-    opacity: 0.12;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  :root[data-theme='dark'] body::before,
-  :root[data-theme='dark'] body::after {
-    animation: none;
+  * {
+    scroll-behavior: auto;
   }
 }
