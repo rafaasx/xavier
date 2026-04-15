@@ -1,13 +1,27 @@
 :root {
   color-scheme: dark;
-  --bg: #070b14;
-  --surface: rgba(15, 20, 34, 0.78);
-  --surface-solid: #101829;
-  --border: rgba(148, 163, 184, 0.18);
-  --text: #f8fafc;
-  --muted: #a3b1c6;
-  --accent: #67e8f9;
-  --accent-strong: #8b5cf6;
+  --bg: #07150d;
+  --surface: #0f2117;
+  --surface-solid: #173022;
+  --border: #274734;
+  --text: #f4fbf5;
+  --muted: #b6ccb8;
+  --accent: #7fd68b;
+  --accent-strong: #2ea44f;
+  --body-font: 'Trebuchet MS', 'Gill Sans', 'Avenir Next', sans-serif;
+  --display-font: 'Georgia', 'Times New Roman', serif;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f1f7ef;
+  --surface: #ffffff;
+  --surface-solid: #e7f1e5;
+  --border: #c7d8c6;
+  --text: #14301b;
+  --muted: #56735a;
+  --accent: #2e7d4f;
+  --accent-strong: #67a56a;
 }
 
 html {
@@ -17,14 +31,10 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(103, 232, 249, 0.11), transparent 30%),
-    radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.13), transparent 22%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
+  font-family: var(--body-font);
+  text-rendering: optimizeLegibility;
 }
 
 *,
@@ -45,4 +55,18 @@ img {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display-font);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
 }

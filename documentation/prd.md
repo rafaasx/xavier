@@ -338,8 +338,10 @@ Página pública simples com links
 * Nome
 * Lista de links:
 
-  * YouTube
-  * Instagram
+  * YouTube : https://www.youtube.com/@aventurasobrerodasoficial
+  * Instagram : https://www.instagram.com/aventurasobrerodasoficial
+  * Linkedin : https://www.linkedin.com/in/rafaasx
+  * Github: https://github.com/rafaasx
   * Loja
   * Site principal
 

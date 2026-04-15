@@ -4,12 +4,13 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'landing',
+    loadChildren: () =>
+      import('./features/landing/landing.routes').then((m) => m.LANDING_ROUTES),
   },
   {
     path: 'landing',
-    loadChildren: () =>
-      import('./features/landing/landing.routes').then((m) => m.LANDING_ROUTES),
+    pathMatch: 'full',
+    redirectTo: '',
   },
   {
     path: 'linktree',

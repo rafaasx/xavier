@@ -1,0 +1,74 @@
+:host {
+  display: block;
+}
+
+.experiences {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.section-heading h2 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.stats,
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.stat,
+.card {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--surface);
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stat strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 1.1rem;
+}
+
+.stat p,
+.card li {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.card h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+@media (max-width: 920px) {
+  .stats,
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -154,6 +154,7 @@ Criar a landing page pessoal que funciona como hub central da presença digital,
 - Estilo similar a Linktree/Hopp
 - Responsivo (mobile-first)
 - Animações leves nos botões
+- Não deve aparecer no menu, deve ser acessada apenas através do link `host/linktree`
 
 ---
 
@@ -164,7 +165,7 @@ Criar a landing page pessoal que funciona como hub central da presença digital,
 - **UX simples** — foco em clareza e hierarquia visual
 - **Animações leves** — fade-in, scroll reveal, hover effects
 - **Mobile-first** — responsivo desde o início
-- **Cores:** definir paleta consistente (escuro com acentos ou claro minimalista)
+- **Cores:** defina dois padrões de cores um dark mode e um light mode, com opção no de alternar no header, não utilize transparências
 
 ---
 

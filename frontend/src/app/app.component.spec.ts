@@ -11,10 +11,10 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  it('renders the shell navigation', () => {
+  it('renders the app layout shell', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.shell__nav')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.topbar')).toBeTruthy();
   });
 });

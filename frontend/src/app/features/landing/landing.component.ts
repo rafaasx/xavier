@@ -1,19 +1,23 @@
-import { NgOptimizedImage } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
-import { brand, quickHighlights, socialLinks } from '../../core/site-data';
+import { LandingAboutComponent } from './landing-about.component';
+import { LandingExperiencesComponent } from './landing-experiences.component';
+import { LandingHeroComponent } from './landing-hero.component';
+import { LandingSocialLinksComponent } from './landing-social-links.component';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [NgOptimizedImage, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    LandingHeroComponent,
+    LandingAboutComponent,
+    LandingExperiencesComponent,
+    LandingSocialLinksComponent,
+  ],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
 export class LandingComponent {
-  protected readonly brand = brand;
-  protected readonly quickHighlights = quickHighlights;
-  protected readonly socialLinks = socialLinks;
 }
 

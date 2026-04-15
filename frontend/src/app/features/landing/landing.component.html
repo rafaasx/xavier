@@ -1,55 +1,5 @@
-<section class="hero">
-  <div class="hero__copy">
-    <span class="eyebrow">MVP estático • foundation</span>
-    <h1>{{ brand.name }}</h1>
-    <p class="lead">
-      {{ brand.description }}
-    </p>
-
-    <div class="hero__actions">
-      <a class="button button--primary" href="#highlights">Ver portfólio</a>
-      <a class="button button--ghost" routerLink="/linktree">Acessar links</a>
-    </div>
-  </div>
-
-  <aside class="hero__panel">
-    <div class="profile-card">
-      <div class="profile-card__avatar">RX</div>
-      <div>
-        <strong>{{ brand.title }}</strong>
-        <p>{{ brand.subtitle }}</p>
-      </div>
-    </div>
-
-    <div class="profile-card profile-card--soft">
-      <p>Base criada com Angular standalone, rotas lazy e layout modular.</p>
-    </div>
-  </aside>
-</section>
-
-<section class="grid" id="highlights">
-  @for (item of quickHighlights; track item.eyebrow) {
-    <article class="card">
-      <span class="eyebrow">{{ item.eyebrow }}</span>
-      <h2>{{ item.title }}</h2>
-      <p>{{ item.body }}</p>
-    </article>
-  }
-</section>
-
-<section class="social">
-  <div class="section-heading">
-    <span class="eyebrow">Redes sociais</span>
-    <h2>Acesso rápido às minhas presenças digitais</h2>
-  </div>
-
-  <div class="social__links">
-    @for (link of socialLinks; track link.label) {
-      <a [href]="link.url" target="_blank" rel="noopener noreferrer">
-        <span>{{ link.icon }}</span>
-        {{ link.label }}
-      </a>
-    }
-  </div>
-</section>
+<app-landing-hero />
+<app-landing-about />
+<app-landing-experiences />
+<app-landing-social-links />
 

@@ -1,0 +1,30 @@
+<section class="experiences" id="experiences">
+  <div class="section-heading">
+    <span class="eyebrow">Experiências</span>
+    <h2>Três frentes com linguagem própria</h2>
+  </div>
+
+  <div class="stats">
+    @for (stat of stats; track stat.label) {
+      <article class="stat">
+        <span>{{ stat.label }}</span>
+        <strong>{{ stat.value }}</strong>
+        <p>{{ stat.note }}</p>
+      </article>
+    }
+  </div>
+
+  <div class="cards">
+    @for (experience of experiences; track experience.title) {
+      <article class="card">
+        <h3>{{ experience.title }}</h3>
+        <ul>
+          @for (point of experience.points; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
+</section>
+

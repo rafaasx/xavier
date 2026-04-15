@@ -1,26 +1,41 @@
 <section class="linktree">
   <div class="linktree__card">
-    <div class="avatar">RX</div>
+    <button type="button" class="theme-toggle" (click)="toggleTheme()"
+      [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      [attr.aria-pressed]="theme.mode() === 'light'">
+      <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
+    </button>
+
+    <img ngSrc="/assets/portrait-rafael-no-bg.png" width="144" height="144" class="avatar"
+      alt="Retrato estilizado de Rafael Xavier" />
     <span class="eyebrow">Página rápida de acesso</span>
     <h1>{{ brand.name }}</h1>
     <p>{{ brand.title }} • {{ brand.subtitle }}</p>
   </div>
 
   <div class="linktree__list">
-    <a class="link" routerLink="/landing">
-      <strong>Site principal</strong>
-      <span>Voltar para a landing estática</span>
-    </a>
-    <a class="link" routerLink="/store">
-      <strong>Loja</strong>
-      <span>Espaço reservado para produtos</span>
-    </a>
-    @for (link of socialLinks; track link.label) {
-      <a class="link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+    @for (link of links; track link.label) {
+    @if (link.href.startsWith('/')) {
+    <a class="link" [routerLink]="link.href">
+      <span class="link__icon" aria-hidden="true">
+        <fa-icon [icon]="link.icon" />
+      </span>
+      <span class="link__content">
         <strong>{{ link.label }}</strong>
-        <span>Abrir perfil oficial</span>
-      </a>
+        <span>{{ link.description }}</span>
+      </span>
+    </a>
+    } @else {
+    <a class="link" [href]="link.href" target="_blank" rel="noopener noreferrer">
+      <span class="link__icon" aria-hidden="true">
+        <fa-icon [icon]="link.icon" />
+      </span>
+      <span class="link__content">
+        <strong>{{ link.label }}</strong>
+        <span>{{ link.description }}</span>
+      </span>
+    </a>
+    }
     }
   </div>
 </section>
-
