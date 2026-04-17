@@ -7,7 +7,7 @@ Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 **Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
 **Arquitetura:** Modular Monolith + Vertical Slice
 
-Esta feature implementa a galeria de mídia na landing page, com suporte a múltiplos tipos de conteúdo (imagens, vídeos YouTube, Instagram, CDN). O sistema de renderização de mídia criado aqui será reutilizado pela Loja (Feature 03).
+Esta feature implementa a galeria de mídia na landing page, com suporte a múltiplos tipos de conteúdo (imagens, vídeos YouTube, Instagram, CDN). O sistema de renderização de mídia criado aqui será reutilizado pela Loja (Feature 04).
 
 ---
 
@@ -195,7 +195,7 @@ O componente `MediaRendererComponent` é **reutilizável** e será usado tanto n
 
 ## Observações
 
-- O componente `MediaRenderer` deve ficar em `shared/` pois será reutilizado na Feature 03 (Loja)
+- O componente `MediaRenderer` deve ficar em `shared/` pois será reutilizado na Feature 04 (Loja)
 - Dados hardcoded nesta fase — backend não necessário ainda
 - O script do Instagram embed deve ser carregado dinamicamente (não no index.html)
 - Considerar usar `IntersectionObserver` para lazy loading de embeds
