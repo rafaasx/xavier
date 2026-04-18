@@ -21,6 +21,7 @@ export class AppLayoutComponent {
 
   protected readonly brand = brand;
   protected readonly headerLinks = headerLinks;
+  protected readonly currentYear = new Date().getFullYear();
   protected readonly faSun = faSun;
   protected readonly faMoon = faMoon;
   protected readonly currentUrl = toSignal(

@@ -88,7 +88,7 @@ Otimizar a aplicação para:
 #### Landing Page
 ```html
 <title>Rafael Xavier — Engenheiro de Software | Criador de Conteúdo | Video Maker</title>
-<meta name="description" content="Portfólio de Rafael Xavier: engenheiro de software full stack, criador de conteúdo e video maker. .NET, Angular, Vue, React.">
+<meta name="description" content="Portfólio de Rafael Xavier: engenheiro de software, criador de conteúdo e video maker. .NET, Angular, Vue, React.">
 <meta name="keywords" content="Rafael Xavier, engenheiro de software, full stack, .NET, Angular, criador de conteúdo, video maker">
 ```
 

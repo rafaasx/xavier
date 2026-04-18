@@ -14,7 +14,7 @@
 
 ## 1.1 Definição
 
-Quero desenvolver uma landing page pessoal que funcione como um hub central da minha presença digital, reunindo meu portfólio profissional, minha atuação como criador de conteúdo e minha evolução como video maker, além de permitir a monetização por meio de recomendações de produtos com links de afiliados. A aplicação deve apresentar de forma clara e profissional minha experiência como engenheiro de software full stack, destacando tecnologias como .NET, Angular, Vue e React, assim como minha produção de conteúdo para plataformas como YouTube e Instagram e minha nova atuação como video maker, ainda em fase inicial, mas com potencial de crescimento.
+Quero desenvolver uma landing page pessoal que funcione como um hub central da minha presença digital, reunindo meu portfólio profissional, minha atuação como criador de conteúdo e minha evolução como video maker, além de permitir a monetização por meio de recomendações de produtos com links de afiliados. A aplicação deve apresentar de forma clara e profissional minha experiência como engenheiro de software, destacando tecnologias como .NET, Angular, Vue e React, assim como minha produção de conteúdo para plataformas como YouTube e Instagram e minha nova atuação como video maker, ainda em fase inicial, mas com potencial de crescimento.
 
 A página deve conter uma seção “Sobre mim” com uma biografia bem construída, além de uma área de experiências organizada por essas três frentes principais. Também deve incluir uma galeria com fotos e vídeos autorais, reforçando tanto o lado técnico quanto o criativo, e uma seção com links para minhas redes sociais. O design deve seguir uma linha moderna e minimalista, com foco em clareza, boa hierarquia visual e experiência do usuário.
 
@@ -63,7 +63,7 @@ Criar uma aplicação web que centralize:
 * Nome: Rafael Xavier
 * Headline:
 
-  * Engenheiro de Software Full Stack
+  * Engenheiro de Software
   * Criador de Conteúdo
   * Video Maker
 

@@ -1,0 +1,66 @@
+<article
+  class="media-container"
+  [class.media-container--instagram-post]="isInstagramPost()"
+  [class.media-container--instagram-reel]="isInstagramReel()"
+  [class.ratio-16-9]="media().aspectRatio === '16:9' && !isInstagramPost()"
+  [class.ratio-9-16]="media().aspectRatio === '9:16' && !isInstagramPost()"
+>
+  @if (media().type === mediaType.IMAGE) {
+    <img
+      class="media media--image"
+      [src]="media().url"
+      [alt]="media().alt ?? 'Mídia da galeria'"
+      loading="lazy"
+      decoding="async"
+    />
+  } @else if (media().type === mediaType.YOUTUBE) {
+    @if (canRenderRichMedia() && youtubeEmbedUrl(); as embedUrl) {
+      <iframe
+        class="media media--iframe"
+        [src]="embedUrl"
+        title="Player do YouTube"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    } @else {
+      <div class="media-placeholder">Carregando YouTube...</div>
+    }
+  } @else if (media().type === mediaType.INSTAGRAM) {
+    @if (canRenderRichMedia()) {
+      <blockquote
+        class="instagram-media media--instagram"
+        [attr.data-instgrm-permalink]="instagramPermalink()"
+        data-instgrm-version="14"
+        [attr.data-instgrm-captioned]="isInstagramPost() ? '' : null"
+        [attr.style]="instagramBlockquoteStyle"
+      >
+        <a [href]="instagramPermalink() ?? media().url" target="_blank" rel="noopener noreferrer">
+          @if (isInstagramPost()) {
+            Ver essa foto no Instagram
+          } @else {
+            Ver esse reel no Instagram
+          }
+        </a>
+      </blockquote>
+    } @else {
+      <div class="media-placeholder">Carregando Instagram...</div>
+    }
+  } @else if (media().type === mediaType.VIDEO) {
+    @if (canRenderRichMedia()) {
+      <video class="media media--video" controls preload="metadata" [poster]="media().thumbnail ?? null">
+        <source [src]="media().url" />
+        Seu navegador não suporta o elemento de vídeo.
+      </video>
+    } @else {
+      <div class="media-placeholder">
+        @if (media().thumbnail; as thumbnail) {
+          <img [src]="thumbnail" [alt]="media().alt ?? 'Miniatura de vídeo'" loading="lazy" decoding="async" />
+        } @else {
+          Prévia de vídeo
+        }
+      </div>
+    }
+  }
+</article>
+

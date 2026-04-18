@@ -1,0 +1,37 @@
+<section class="gallery" id="gallery">
+  <div class="section-heading">
+    <span class="eyebrow">Galeria</span>
+    <h2>Minhas mídias</h2>
+  </div>
+
+  <div class="gallery__grid gallery__grid--youtube">
+    @for (media of youtubeMedias; track media.id) {
+    <article class="gallery__item" [class.gallery__item--previewable]="isPreviewable(media)"
+      [attr.role]="isPreviewable(media) ? 'button' : null" [attr.tabindex]="isPreviewable(media) ? 0 : null"
+      [attr.aria-label]="isPreviewable(media) ? 'Abrir pré-visualização de mídia' : null" (click)="openPreview(media)"
+      (keydown.enter)="openPreview(media)" (keydown.space)="openPreview(media); $event.preventDefault()">
+      <app-media-renderer [media]="media" />
+    </article>
+    }
+  </div>
+
+  <div class="gallery__grid gallery__grid--instagram">
+    @for (media of instagramMedias; track media.id) {
+    <article class="gallery__item">
+      <app-media-renderer [media]="media" />
+    </article>
+    }
+  </div>
+
+  @if (selectedMedia(); as media) {
+  <div class="lightbox" role="presentation" (click)="closePreview()">
+    <div class="lightbox__dialog" role="dialog" aria-modal="true" aria-label="Pré-visualização da mídia selecionada"
+      (click)="$event.stopPropagation()">
+      <button type="button" class="lightbox__close" (click)="closePreview()" aria-label="Fechar visualização">
+        Fechar
+      </button>
+      <app-media-renderer [media]="media" [prioritize]="true" />
+    </div>
+  </div>
+  }
+</section>

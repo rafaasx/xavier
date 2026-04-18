@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './landing-hero.component.scss',
 })
 export class LandingHeroComponent implements OnInit, OnDestroy {
-  private readonly headlines = ['Engenheiro de Software Full Stack', 'Criador de Conteúdo', 'Video Maker'];
+  private readonly headlines = ['Engenheiro de Software', 'Criador de Conteúdo', 'Video Maker'];
   private readonly scrambleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*+-_=<>[]{}';
   private cycleTimerId?: number;
   private animationFrameId?: number;

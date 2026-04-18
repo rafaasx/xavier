@@ -1,37 +1,20 @@
 <div class="shell">
   @if (showHeader()) {
-    <header class="topbar">
-      <a class="brand" routerLink="/" aria-label="Ir para o início">
-        <span class="brand__mark">RX</span>
-        <span class="brand__text">
-          <small>{{ brand.eyebrow }}</small>
-          <strong>{{ brand.name }}</strong>
-          <small>{{ brand.subtitle }}</small>
-        </span>
+  <header class="topbar">
+    <nav class="nav" aria-label="Principal">
+      @for (item of headerLinks; track item.label) {
+      <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
+        {{ item.label }}
       </a>
+      }
+    </nav>
 
-      <nav class="nav" aria-label="Principal">
-        @for (item of headerLinks; track item.label) {
-          <a
-            [routerLink]="item.route"
-            [fragment]="item.fragment"
-            [attr.aria-label]="item.description"
-          >
-            {{ item.label }}
-          </a>
-        }
-      </nav>
-
-      <button
-        type="button"
-        class="theme-toggle"
-        (click)="toggleTheme()"
-        [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
-        [attr.aria-pressed]="theme.mode() === 'light'"
-      >
-        <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
-      </button>
-    </header>
+    <button type="button" class="theme-toggle" (click)="toggleTheme()"
+      [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+      [attr.aria-pressed]="theme.mode() === 'light'">
+      <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
+    </button>
+  </header>
   }
 
   <main class="content">
@@ -39,8 +22,7 @@
   </main>
 
   <footer class="footer">
-    <p>© {{ brand.name }} — {{ brand.title }}</p>
-    <p>Projeto estático, modular e pronto para evoluir por feature.</p>
+    <p>© {{ brand.name }}</p>
+    <p>Todos os direitos reservados | {{ currentYear }}</p>
   </footer>
 </div>
-

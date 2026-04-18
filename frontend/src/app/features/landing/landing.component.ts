@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { LandingAboutComponent } from './landing-about.component';
+import { GallerySectionComponent } from './components/gallery/gallery-section.component';
 import { LandingExperiencesComponent } from './landing-experiences.component';
 import { LandingHeroComponent } from './landing-hero.component';
 import { LandingSocialLinksComponent } from './landing-social-links.component';
@@ -12,6 +13,7 @@ import { LandingSocialLinksComponent } from './landing-social-links.component';
   imports: [
     LandingHeroComponent,
     LandingAboutComponent,
+    GallerySectionComponent,
     LandingExperiencesComponent,
     LandingSocialLinksComponent,
   ],

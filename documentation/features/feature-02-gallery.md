@@ -7,19 +7,19 @@ Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 **Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
 **Arquitetura:** Modular Monolith + Vertical Slice
 
-Esta feature implementa a galeria de mídia na landing page, com suporte a múltiplos tipos de conteúdo (imagens, vídeos YouTube, Instagram, CDN). O sistema de renderização de mídia criado aqui será reutilizado pela Loja (Feature 04).
+Esta feature implementa a galeria de mídia na landing page e em uma aba dedicada (`/gallery`), com suporte a conteúdos embedados (YouTube e Instagram). O sistema de renderização de mídia criado aqui será reutilizado pela Loja (Feature 04).
 
 ---
 
 ## Objetivo
 
-Criar uma seção de galeria na landing page que:
+Criar uma galeria de mídia que:
 
-- Exibe imagens e vídeos autorais do Rafael
+- Exibe conteúdos autorais embedados do Rafael
 - Suporta múltiplos formatos de mídia
 - Renderiza embeds nativos de YouTube e Instagram
-- Reproduz vídeos de CDN via HTML5
 - É responsivo e performático
+- Fica acessível também em uma aba própria fora da loja (`/gallery`)
 
 ---
 
@@ -32,6 +32,10 @@ Criar uma seção de galeria na landing page que:
   /landing
     /components
       /gallery       → gallery-section.component.ts
+  /gallery
+    gallery.component.ts
+    gallery.routes.ts
+    gallery-content.ts
 
 /src/app/shared
   /components
@@ -149,7 +153,7 @@ O componente `MediaRendererComponent` é **reutilizável** e será usado tanto n
 
 ---
 
-## Galeria (Seção da Landing)
+## Galeria (Landing + Aba dedicada)
 
 ### Layout
 
@@ -161,28 +165,35 @@ O componente `MediaRendererComponent` é **reutilizável** e será usado tanto n
 
 ### Dados
 
-- Nesta fase, os dados da galeria são **hardcoded** em um array no componente
+- Nesta fase, os dados da galeria são **hardcoded** em `gallery-content.ts`
 - Futuramente pode ser migrado para o banco de dados
 
 ### Interação
 
-- Click em imagem → modal/lightbox com tamanho maior
-- Click em vídeo → reproduz no local ou abre modal
+- Click em item da galeria → visualização em destaque com embed responsivo
 - Filtro por tipo de mídia (opcional nesta fase)
 
 ---
 
 ## Critérios de Aceitação
 
-- [ ] Galeria exibe grid responsivo com imagens e vídeos
+- [ ] Galeria exibe grid responsivo com conteúdos embedados
 - [ ] Vídeos do YouTube renderizam como embed funcional
 - [ ] Posts do Instagram renderizam como embed nativo
-- [ ] Vídeos de CDN reproduzem via player HTML5
 - [ ] Aspect ratios 16:9 e 9:16 são respeitados
 - [ ] Lazy loading funciona para imagens
 - [ ] Layout responsivo (mobile, tablet, desktop)
 - [ ] Componente `MediaRenderer` funciona isoladamente
 - [ ] URLs são sanitizadas corretamente (sem erros de segurança)
+- [ ] Aba `/gallery` funciona fora da loja e exibe os links embedados do conteúdo da galeria
+
+---
+
+## Rotas
+
+| Rota | Componente |
+|------|-----------|
+| `/gallery` | GalleryComponent |
 
 ---
 
@@ -193,9 +204,37 @@ O componente `MediaRendererComponent` é **reutilizável** e será usado tanto n
 
 ---
 
+## Conteúdo da Galeria
+
+https://www.youtube.com/watch?v=TdmLme2IfN8&t=2s
+https://www.youtube.com/watch?v=6sYzS4LdiSY&t=2s
+https://www.youtube.com/watch?v=LTNlRztvg3k
+https://www.youtube.com/watch?v=vNKB4bl7JPc&t=303s
+https://www.youtube.com/watch?v=kC6skYsseZ4
+https://www.youtube.com/watch?v=4SpXvRqjd1o
+https://www.youtube.com/watch?v=hLEXm8QCrgY&t=516s
+https://www.instagram.com/reel/DUeNI9FAWH2/?igsh=MXBrNWd1eDhzd2dkYw==
+https://www.instagram.com/reel/DHYkqRuMd7Z/?igsh=YjhlOHNmanZsemFs
+https://www.instagram.com/reel/CbKw5ZqFfRm/?igsh=eWdhMzFsZnN0anpo
+https://www.instagram.com/reel/ChlOJVWlaoW/?igsh=aDVodTM3djBldThz
+https://www.instagram.com/reel/C_ocQtLPMu_/?igsh=MXNiOG5jbDQxYWdydA==
+https://www.instagram.com/reel/C6ReqaprgEF/?igsh=YW5sY28xODQ4cHlx
+https://www.instagram.com/reel/CidkxVqpR96/?igsh=M2s5cDIzbmFheW9u
+https://www.instagram.com/reel/CkGaVKHuBpI/?igsh=NmJyNWVpNmllanF2
+https://www.instagram.com/reel/ChMsTmnFGbq/?igsh=MW8xYnRoYWd3eHA2dg==
+https://www.instagram.com/reel/DNmM31iPDo4/?igsh=MTRldHdsajk1eGN4bw==
+https://www.instagram.com/reel/C7wtV2JuLlO/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==
+https://www.instagram.com/aventurasobrerodasoficial/p/DWryZw6j_Co/
+https://www.instagram.com/aventurasobrerodasoficial/p/DWH4DWjD6g0/
+https://www.instagram.com/aventurasobrerodasoficial/p/DV8sLCuDqOv/
+https://www.instagram.com/aventurasobrerodasoficial/p/DVOjAQ6EVpZ/
+
+---
+
 ## Observações
 
 - O componente `MediaRenderer` deve ficar em `shared/` pois será reutilizado na Feature 04 (Loja)
 - Dados hardcoded nesta fase — backend não necessário ainda
 - O script do Instagram embed deve ser carregado dinamicamente (não no index.html)
 - Considerar usar `IntersectionObserver` para lazy loading de embeds
+

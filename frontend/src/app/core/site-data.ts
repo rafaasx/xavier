@@ -24,11 +24,11 @@ export type ExperienceCard = Readonly<{
 
 export const brand = {
   name: 'Rafael Xavier',
-  title: 'Engenheiro de Software Full Stack',
-  subtitle: 'Criador de Conteúdo e Video Maker',
+  title: 'Engenheiro de Software',
+  subtitle: 'Engenheiro de Software • Criador de Conteúdo • Video Maker',
   description:
     'Landing pessoal minimalista para apresentar portfólio, criação de conteúdo e o futuro hub de produtos recomendados.',
-  eyebrow: 'Landing pessoal',
+  eyebrow: '',
 } as const;
 
 export const headerLinks: NavLink[] = [
@@ -40,6 +40,7 @@ export const headerLinks: NavLink[] = [
     fragment: 'experiences',
     description: 'Ir para a seção de experiências',
   },
+  { label: 'Galeria', route: '/', fragment: 'gallery', description: 'Ir para a seção de galeria' },
   { label: 'Redes', route: '/', fragment: 'social', description: 'Ir para a seção de redes sociais' },
   { label: 'Loja', route: '/store', description: 'Abrir a loja' },
 ];
@@ -61,36 +62,42 @@ export const socialLinks: SocialLink[] = [
 
 export const landingStats: LandingStat[] = [
   {
-    label: 'Stack principal',
-    value: '.NET • Angular • Vue • React',
-    note: 'Base técnica alinhada ao portfólio profissional.',
+    label: '👨🏽‍💻Stack principal',
+    value: '.NET • Angular • Vue',
+    note: 'Mais de 16 anos de experiência com análise e desenvolvimento de sistemas.',
   },
   {
-    label: 'Conteúdo',
+    label: '▶️Conteúdo',
     value: 'YouTube • Instagram',
-    note: 'Presença digital com foco em alcance e consistência.',
+    note: 'Produção de conteúdo digital de viagens no estilo overland, vlogging, lifestyle e documentários.',
   },
   {
-    label: 'Video maker',
-    value: 'Em crescimento',
-    note: 'Frente criativa em consolidação, com espaço para evolução.',
+    label: '📹Video maker',
+    value: 'Nova Skill',
+    note: 'Frente criativa em evolução, explorando novas técnicas e estilos.',
   },
 ];
 
 export const aboutParagraphs = [
-  'Sou engenheiro de software full stack com experiência em produtos web, interfaces ricas e decisões técnicas que equilibram velocidade e manutenção.',
-  'Também produzo conteúdo para YouTube e Instagram, transformando conhecimento técnico e bastidores de criação em presença digital consistente.',
+  'Sou um desenvolvedor Full Stack com mais de 15 anos de experiência em análise, desenvolvimento e arquitetura de sistemas, com foco em tecnologias .NET, C#, e frameworks modernos de front-end como Vue.js, Angular e React. Ao longo da minha trajetória, atuei em projetos de diferentes portes, desde o levantamento de requisitos até a entrega de soluções robustas e escaláveis, utilizando práticas de Clean Code, SOLID, DDD e CI/CD.',
+  'Também produzo conteúdo para YouTube e Instagram desde 2019, transformando conhecimento técnico e viagens em conteúdo digital.',
   'Minha nova frente como video maker me permite conectar produto, narrativa e estética em uma mesma experiência.',
 ] as const;
 
 export const experienceCards: ExperienceCard[] = [
   {
     title: 'Engenharia de Software',
-    points: ['.NET, Angular, Vue e React', 'Soluções web de produto', 'Foco em clareza, escalabilidade e entrega rápida'],
+    points: ['Linguagens & Frameworks: C#, .NET Core 9/ASP.NET, JavaScript/TypeScript, React, Vue.js, Angular, HTML, JavaScript, CSS, Bootstrap, JQuery, Entity Framework', 
+      'Bancos de Dados: SQL Server, PostgreSQL, Oracle, MongoDB', 
+      'DevOps & Cloud: Azure, Docker, GitHub, Azure DevOps',
+      'Metodologias: Scrum, Git Flow, CI/CD, Domain-Driven Design (DDD), Clean Code, SOLID, Minimal APIs',
+      'Testes: XUnit.net, NUnit, MSTest',
+      'Outros: REST APIs, Swagger, OData, Entity Framework, mensageria assíncrona, MediatR, Keycloak, FastEndpoints, FluentValidation, Dapper, HangFire, OpenTelemetry, AutoMapper'
+    ],
   },
   {
     title: 'Criador de Conteúdo',
-    points: ['YouTube e Instagram', 'Educação, bastidores e rotina criativa', 'Distribuição com identidade própria'],
+    points: ['YouTube e Instagram', 'Educação, bastidores e rotina criativa', 'Viagens, aventuras e lifestyle', 'Documentação de processos e aprendizados', 'Documentários'],
   },
   {
     title: 'Video Maker',

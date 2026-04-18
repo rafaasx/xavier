@@ -55,7 +55,7 @@ Criar a landing page pessoal que funciona como hub central da presença digital,
 
 - Nome: **Rafael Xavier**
 - Headlines (com efeito de typing ou alternância):
-  - Engenheiro de Software Full Stack
+  - Engenheiro de Software
   - Criador de Conteúdo
   - Video Maker
 
