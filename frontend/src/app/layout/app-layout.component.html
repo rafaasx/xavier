@@ -3,13 +3,25 @@
   <header class="topbar">
     <nav class="nav" aria-label="Principal">
       @for (item of headerLinks; track item.label) {
-      <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
-        {{ item.label }}
-      </a>
+        @if (item.label === 'Loja') {
+          <span class="nav__store-group">
+            <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
+              {{ item.label }}
+            </a>
+            <button type="button" class="theme-toggle theme-toggle--mobile" (click)="toggleTheme()"
+              [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+              [attr.aria-pressed]="theme.mode() === 'light'">
+              <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
+            </button>
+          </span>
+        } @else {
+          <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
+            {{ item.label }}
+          </a>
+        }
       }
     </nav>
-
-    <button type="button" class="theme-toggle" (click)="toggleTheme()"
+    <button type="button" class="theme-toggle theme-toggle--desktop" (click)="toggleTheme()"
       [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
       [attr.aria-pressed]="theme.mode() === 'light'">
       <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
@@ -24,5 +36,8 @@
   <footer class="footer">
     <p>© {{ brand.name }}</p>
     <p>Todos os direitos reservados | {{ currentYear }}</p>
+    <button type="button" class="footer__back-to-top" (click)="scrollToTop()">
+      Voltar ao topo
+    </button>
   </footer>
 </div>

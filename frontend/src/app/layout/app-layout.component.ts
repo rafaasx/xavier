@@ -41,5 +41,13 @@ export class AppLayoutComponent {
   protected toggleTheme(): void {
     this.theme.toggle();
   }
+
+  protected scrollToTop(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
