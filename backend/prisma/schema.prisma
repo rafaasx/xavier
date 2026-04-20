@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+}
+
+model Product {
+  id               String          @id @default(uuid())
+  name             String
+  shortDescription String
+  longDescription  String
+  createdAt        DateTime        @default(now())
+  medias           Media[]
+  productTags      ProductTag[]
+  affiliateLinks   AffiliateLink[]
+}
+
+model Media {
+  id          String      @id @default(uuid())
+  productId   String
+  url         String
+  type        MediaType
+  aspectRatio AspectRatio
+  order       Int         @default(0)
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, order])
+}
+
+model Tag {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  productTags ProductTag[]
+}
+
+model ProductTag {
+  productId String
+  tagId     String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
+  @@index([tagId])
+}
+
+model AffiliateLink {
+  id        String  @id @default(uuid())
+  productId String
+  platform  String
+  url       String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+enum MediaType {
+  IMAGE
+  YOUTUBE
+  INSTAGRAM
+  VIDEO
+}
+
+enum AspectRatio {
+  RATIO_16_9
+  RATIO_9_16
+}
