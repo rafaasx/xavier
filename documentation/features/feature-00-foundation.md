@@ -12,7 +12,7 @@ Este é o primeiro passo do projeto **Landing Page Pessoal + Loja de Afiliados**
 |--------|-----------|
 | Frontend | Angular (última versão) |
 
-> Backend (.NET Core 10) e banco (PostgreSQL) serão configurados na Feature 03.
+> Backend (Node.js + Prisma) e banco (Supabase PostgreSQL) serão configurados na Feature 03.
 
 ---
 

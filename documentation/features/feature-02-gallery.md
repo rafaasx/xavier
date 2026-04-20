@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature implementa a galeria de mídia na landing page e em uma aba dedicada (`/gallery`), com suporte a conteúdos embedados (YouTube e Instagram). O sistema de renderização de mídia criado aqui será reutilizado pela Loja (Feature 04).

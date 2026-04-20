@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature implementa a landing page principal e a página Linktree — ambas são páginas públicas, estáticas (sem dados do banco), e compõem a presença digital do Rafael.

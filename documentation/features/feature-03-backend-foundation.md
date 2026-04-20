@@ -1,178 +1,161 @@
-# Feature 03 — Foundation Backend (.NET + PostgreSQL)
+# Feature 03 — Foundation Backend (Node.js + Prisma + Supabase)
 
 ## Contexto
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL (via MCP) | Prisma  
 **Arquitetura:** Modular Monolith + Vertical Slice
 
-Esta feature configura o backend da aplicação. Ela é necessária a partir do momento em que a Loja (Feature 04) precisa de dados dinâmicos. O MVP estático (Landing, Galeria, Linktree) **não depende** desta feature.
+Esta feature configura o backend da aplicação. Ela é necessária quando a Loja (Feature 04) passa a depender de dados dinâmicos. O MVP estático (Landing, Galeria, Linktree) **não depende** desta feature.
 
 ---
 
 ## Objetivo
 
-Criar a estrutura do backend com:
+Criar a fundação do backend com:
 
-- Projeto .NET Core 10 Minimal API configurado e rodando
-- Conexão com PostgreSQL configurada
-- Modelo de dados completo com migrations
-- Autenticação JWT configurada
-- CORS configurado para o frontend
-- Seed do usuário admin
+- API Node.js/TypeScript publicada na Vercel (`/api/*`)
+- Conexão com Supabase PostgreSQL
+- Prisma ORM com schema e migrations
+- Autenticação JWT
+- CORS para o frontend
+- Seed de usuário admin
 - Health check endpoint
 
 ---
 
 ## Estrutura de Pastas
 
-### Backend (`/backend`)
+### Backend
 
-```
-/src
-  /Api              → Program.cs, endpoints, middlewares
-  /Features         → organização por feature (vertical slice)
-    /Auth           → Login, Me
-    /Products       → CRUD endpoints
-    /Tags           → CRUD endpoints
-    /Medias         → CRUD endpoints
-    /AffiliateLinks → CRUD endpoints
-  /Domain           → entidades, enums
-  /Infrastructure   → DbContext, migrations, seed
+```text
+/api
+  /health.ts
+  /auth
+    login.ts
+    me.ts
+  /products
+    index.ts
+    [id].ts
+  /tags
+    index.ts
+
+/backend
+  /src
+    /features
+      /auth
+      /products
+      /tags
+      /medias
+      /affiliate-links
+    /shared
+      db.ts
+      auth.ts
+      env.ts
+  /prisma
+    schema.prisma
+    /migrations
 ```
 
 ---
 
-## Modelo de Dados
+## Modelo de Dados (Prisma)
 
-### Entidades
-
-```csharp
-public class User
-{
-    public Guid Id { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; } // BCrypt
+```prisma
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
 }
 
-public class Product
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string ShortDescription { get; set; }
-    public string LongDescription { get; set; }
-    public DateTime CreatedAt { get; set; }
-
-    public List<Media> Medias { get; set; }
-    public List<ProductTag> ProductTags { get; set; }
-    public List<AffiliateLink> AffiliateLinks { get; set; }
+model Product {
+  id               String          @id @default(uuid())
+  name             String
+  shortDescription String
+  longDescription  String
+  createdAt        DateTime        @default(now())
+  medias           Media[]
+  productTags      ProductTag[]
+  affiliateLinks   AffiliateLink[]
 }
 
-public class Media
-{
-    public Guid Id { get; set; }
-    public Guid ProductId { get; set; }
-    public string Url { get; set; }
-    public MediaType Type { get; set; }
-    public AspectRatio AspectRatio { get; set; }
-    public int Order { get; set; }
-
-    public Product Product { get; set; }
+model Media {
+  id          String   @id @default(uuid())
+  productId   String
+  url         String
+  type        MediaType
+  aspectRatio AspectRatio
+  order       Int      @default(0)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-public class Tag
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-
-    public List<ProductTag> ProductTags { get; set; }
+model Tag {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  productTags ProductTag[]
 }
 
-public class ProductTag
-{
-    public Guid ProductId { get; set; }
-    public Guid TagId { get; set; }
+model ProductTag {
+  productId String
+  tagId     String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-    public Product Product { get; set; }
-    public Tag Tag { get; set; }
+  @@id([productId, tagId])
 }
 
-public class AffiliateLink
-{
-    public Guid Id { get; set; }
-    public Guid ProductId { get; set; }
-    public string Platform { get; set; }
-    public string Url { get; set; }
-
-    public Product Product { get; set; }
+model AffiliateLink {
+  id        String  @id @default(uuid())
+  productId String
+  platform  String
+  url       String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
-```
 
-### Enums
+enum MediaType {
+  IMAGE
+  YOUTUBE
+  INSTAGRAM
+  VIDEO
+}
 
-```csharp
-public enum MediaType { IMAGE, YOUTUBE, INSTAGRAM, VIDEO }
-public enum AspectRatio { RATIO_16_9, RATIO_9_16 }
+enum AspectRatio {
+  RATIO_16_9
+  RATIO_9_16
+}
 ```
 
 ---
 
 ## Tarefas
 
-### Projeto
-
-1. Criar projeto .NET Core 10 Web API (`dotnet new webapi --use-minimal-apis`)
-2. Configurar estrutura de pastas (`Features/`, `Domain/`, `Infrastructure/`)
-
-### Pacotes
-
-3. Instalar pacotes:
-   - `Npgsql.EntityFrameworkCore.PostgreSQL`
-   - `BCrypt.Net-Next`
-   - `Microsoft.AspNetCore.Authentication.JwtBearer`
-
-### Banco de Dados
-
-4. Configurar `AppDbContext` com todas as entidades
-5. Configurar connection string via `appsettings.json`
-6. Criar migration inicial com todas as tabelas
-7. Criar seed para usuário admin (senha com hash BCrypt)
-
-### Autenticação
-
-8. Configurar JWT Authentication no `Program.cs`
-9. Criar endpoint `POST /api/auth/login`
-10. Criar endpoint `GET /api/auth/me` [Auth]
-
-### Configurações
-
-11. Configurar CORS para aceitar o frontend
-12. Criar endpoint `GET /api/health` (health check)
-13. Configurar variáveis de ambiente (JWT Secret, DB connection)
+1. Criar estrutura Node.js/TypeScript para Vercel Functions.
+2. Instalar e configurar pacotes principais:
+   - `prisma`
+   - `@prisma/client`
+   - `bcryptjs`
+   - `jose` (JWT)
+3. Configurar `schema.prisma` e gerar primeira migration.
+4. Configurar conexão Supabase:
+   - `DATABASE_URL` (pooling)
+   - `DIRECT_URL` (migrations)
+5. Criar seed do usuário admin (senha com hash BCrypt).
+6. Implementar endpoints:
+   - `GET /api/health`
+   - `POST /api/auth/login`
+   - `GET /api/auth/me` (protegido)
+7. Configurar CORS e validação de ambiente.
+8. Publicar backend na Vercel.
 
 ---
 
-## JWT Config
-
-```json
-{
-  "Jwt": {
-    "Secret": "chave-secreta-forte-minimo-256-bits",
-    "Issuer": "xavier-api",
-    "Audience": "xavier-app",
-    "ExpirationMinutes": 480
-  }
-}
-```
-
----
-
-## API Endpoints (desta feature)
+## Endpoints desta Feature
 
 ### GET /api/health
 
 **Response (200):**
+
 ```json
 { "status": "healthy" }
 ```
@@ -180,6 +163,7 @@ public enum AspectRatio { RATIO_16_9, RATIO_9_16 }
 ### POST /api/auth/login
 
 **Request:**
+
 ```json
 {
   "email": "admin@rafaelxavier.com",
@@ -188,83 +172,57 @@ public enum AspectRatio { RATIO_16_9, RATIO_9_16 }
 ```
 
 **Response (200):**
+
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "expiresAt": "2025-04-14T10:00:00Z"
+  "token": "jwt...",
+  "expiresAt": "2026-01-01T00:00:00Z"
 }
 ```
 
-**Response (401):**
-```json
-{ "error": "Credenciais inválidas" }
-```
+### GET /api/auth/me (Auth)
 
-### GET /api/auth/me [Auth]
+**Response (200):**
 
-**Response:**
 ```json
 {
-  "id": "guid",
+  "id": "uuid",
   "email": "admin@rafaelxavier.com"
 }
 ```
 
 ---
 
-## Criação do Usuário Admin
+## Deploy (Vercel + Supabase)
 
-```sql
-INSERT INTO "Users" ("Id", "Email", "PasswordHash")
-VALUES (
-  gen_random_uuid(),
-  'admin@rafaelxavier.com',
-  '$2a$11$...'  -- hash BCrypt
-);
-```
-
-> Implementar como seed no código para facilitar setup em novos ambientes.
-
----
-
-## Diretrizes Técnicas
-
-- **Evitar overengineering** — não usar Clean Architecture, CQRS, ou abstrações desnecessárias
-- **Priorizar simplicidade** — Minimal API com organização por feature
-- **Código modular** — cada feature isolada em sua pasta
-- **Baixa complexidade** — fácil de entender e manter
-- **Vertical Slice** — cada endpoint em seu próprio arquivo
+- Frontend e backend no mesmo projeto Vercel.
+- Rewrites de SPA continuam apontando para `index.html` apenas para rotas não-`/api`.
+- Variáveis de ambiente obrigatórias na Vercel:
+  - `DATABASE_URL`
+  - `DIRECT_URL`
+  - `JWT_SECRET`
+- Migrations Prisma executadas no pipeline de deploy.
+- Banco provisionado/gerenciado no Supabase via MCP.
 
 ---
 
 ## Critérios de Aceitação
 
-- [ ] Projeto .NET Core roda com `dotnet run` sem erros
-- [ ] Backend conecta ao PostgreSQL com sucesso
-- [ ] Migration cria todas as tabelas corretamente
+- [ ] Backend Node.js responde sem erro na Vercel
+- [ ] Prisma conecta no Supabase com sucesso
+- [ ] Migration inicial cria as tabelas corretamente
 - [ ] Seed do admin funciona
-- [ ] `GET /api/health` retorna status healthy
-- [ ] `POST /api/auth/login` retorna JWT com credenciais válidas
-- [ ] `POST /api/auth/login` retorna 401 com credenciais inválidas
-- [ ] `GET /api/auth/me` retorna dados do usuário com token válido
-- [ ] Endpoints protegidos retornam 401 sem token
-- [ ] CORS permite requisições do frontend
-- [ ] Estrutura de pastas segue o padrão definido
+- [ ] `GET /api/health` retorna `healthy`
+- [ ] `POST /api/auth/login` retorna JWT válido
+- [ ] `GET /api/auth/me` exige token válido
+- [ ] CORS permite chamadas do frontend publicado
 
 ---
 
 ## Dependências
 
-Nenhuma — esta feature é independente do frontend.
+Nenhuma.
 
-> O frontend (Features 00-02) funciona sem este backend.
+> O frontend (Features 00-02) funciona sem backend.
 > A Loja (Feature 04) e o Admin (Feature 05) dependem desta feature.
 
----
-
-## Observações
-
-- Não há cadastro de usuário pelo frontend — admin é criado via seed
-- O admin é single-user (sem sistema de permissões/roles)
-- Upload de imagens não está no escopo — todas as mídias são URLs externas
-- Esta feature pode ser desenvolvida em paralelo com as Features 01 e 02

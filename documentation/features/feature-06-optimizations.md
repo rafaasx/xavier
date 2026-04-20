@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | .NET Core 10 Minimal API | PostgreSQL
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature é a fase final de polimento, focada em otimizações de performance, SEO e responsividade para garantir que a aplicação atenda aos padrões de qualidade definidos.
@@ -68,16 +68,17 @@ Otimizar a aplicação para:
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 ```
 
-### Otimizações Backend
+### Otimizações Backend (Node.js + Supabase)
 
-- Response compression (gzip/brotli)
-- Caching headers para assets estáticos
+- Response compression (gzip/brotli) no edge da Vercel
+- Caching headers para respostas públicas (`/api/products`, `/api/tags`)
 - Cache de queries frequentes (lista de tags, produtos populares)
-- Paginação eficiente (evitar `COUNT(*)` quando possível)
+- Uso de connection pooling do Supabase para evitar exaustão de conexões
+- Paginação eficiente (evitar consultas custosas desnecessárias)
 - Índices no banco:
-  - `Product.Name` (busca)
-  - `Product.CreatedAt` (ordenação)
-  - `ProductTag` (composite index)
+  - `Product.name` (busca)
+  - `Product.createdAt` (ordenação)
+  - tabela de junção `ProductTag` (índice composto)
 
 ---
 
@@ -242,4 +243,4 @@ Otimizar a aplicação para:
 - Testar em dispositivos reais além de emuladores
 - Angular SSR é opcional nesta fase — avaliar necessidade baseado nos resultados de SEO
 - Considerar usar Google Search Console para monitorar indexação
-- Performance do backend pode ser monitorada com ferramentas como Application Insights
+- Performance do backend pode ser monitorada com logs/analytics da Vercel e métricas do Supabase

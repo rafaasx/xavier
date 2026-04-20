@@ -4,7 +4,7 @@
 
 Este projeto é a **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular 17 | .NET Core 10 Minimal API | PostgreSQL  
+**Stack:** Angular 17 | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma  
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature prepara o frontend atual para ser publicado em um serviço gratuito, para que o MVP possa ser testado e validado fora do ambiente local. O foco é publicar a aplicação estática com rotas SPA funcionando corretamente.
@@ -35,7 +35,7 @@ Colocar a aplicação em produção gratuita com:
 
 ### Não inclui
 
-- Backend .NET
+- Backend Node.js
 - Banco de dados
 - Autenticação
 - Uploads
@@ -157,4 +157,5 @@ Adicionar a configuração necessária para o host escolhido:
 - O ponto mais importante é o suporte a SPA no host gratuito.
 - O host escolhido para este setup foi Vercel, com fallback de rotas via `vercel.json`.
 - A rota pública canônica do linktree passou a ser `/links`, com `/linktree` redirecionando para ela.
+- O backend futuro também seguirá na Vercel (`/api/*`) para manter a mesma infraestrutura.
 - Se o host escolhido mudar, a configuração de deploy pode ser ajustada sem alterar a aplicação principal.

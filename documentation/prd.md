@@ -8,8 +8,9 @@
 **Stack definida:**
 
 * Frontend: Angular (última versão)
-* Backend: .NET Core 10 (Web API) Minimal API
-* Banco: PostgreSQL
+* Backend: Node.js (TypeScript) em Vercel Functions
+* ORM: Prisma (padrão da comunidade Node.js)
+* Banco: Supabase PostgreSQL (provisionado e gerenciado via MCP)
 * Arquitetura: Modular Monolith + Vertical Slice
 
 ## 1.1 Definição
@@ -26,7 +27,7 @@ A aplicação também deve contar com uma área administrativa protegida por aut
 
 Além disso, deve existir uma página pública separada da landing principal, no estilo de ferramentas como Linktree ou Hopp, contendo uma versão simplificada com links diretos para minhas redes sociais, para a própria landing page e para a loja, funcionando como um ponto rápido de acesso para compartilhamento.
 
-Do ponto de vista técnico, a aplicação deve ser construída utilizando Angular em sua versão mais recente no frontend, .NET Core 10 no backend e PostgreSQL como banco de dados. A arquitetura deve ser simples e eficiente, evitando abordagens complexas como Clean Architecture, priorizando organização por funcionalidades e facilidade de manutenção. O objetivo é construir um sistema enxuto, escalável e focado em entrega rápida de valor, que possa evoluir gradualmente conforme novas necessidades surgirem.
+Do ponto de vista técnico, a aplicação deve ser construída utilizando Angular em sua versão mais recente no frontend, Node.js com TypeScript no backend e Supabase PostgreSQL como banco de dados (operado via MCP). O backend deve usar Prisma como ORM para modelagem, migrations e acesso aos dados. A arquitetura deve ser simples e eficiente, evitando abordagens complexas como Clean Architecture, priorizando organização por funcionalidades e facilidade de manutenção. O objetivo é construir um sistema enxuto, escalável e focado em entrega rápida de valor, que possa evoluir gradualmente conforme novas necessidades surgirem.
 
 ---
 
@@ -376,7 +377,16 @@ Página pública simples com links
 
 * Modular Monolith
 * Organização por feature
-* Minimal API
+* API HTTP em Node.js/TypeScript (Vercel Functions)
+* Prisma ORM para acesso a dados
+
+## Deploy
+
+* Frontend publicado na Vercel (SPA Angular com fallback de rotas)
+* Backend publicado na Vercel via Functions (`/api/*`)
+* Banco de dados no Supabase PostgreSQL
+* Variáveis de ambiente configuradas na Vercel (`DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`)
+* Execução de migrations Prisma no pipeline de deploy
 
 ## Frontend
 
@@ -397,11 +407,20 @@ Página pública simples com links
 
 ## Backend
 
-/src
-/Api
-/Features
-/Domain
-/Infrastructure
+/api
+  /auth
+  /products
+  /tags
+  /medias
+  /affiliate-links
+
+/backend
+  /src
+    /features
+    /shared
+  /prisma
+    schema.prisma
+    migrations
 
 ---
 
