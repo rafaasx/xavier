@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma  
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma + Zod | ngx-mask (frontend)
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature implementa a área administrativa para autenticação e CRUD de produtos, mídias, tags e links afiliados.
@@ -77,9 +77,17 @@ Entregar:
 
 - JWT assinado com `JWT_SECRET`
 - Senhas com BCrypt
+- Validação de entrada com Zod em todos os endpoints admin
 - Middleware de autenticação em todas as rotas de escrita
 - CORS limitado ao domínio publicado na Vercel
 - Interceptor Angular para anexar token e tratar 401
+
+---
+
+## Máscaras de Campos (Frontend Admin)
+
+- Usar `ngx-mask` para campos numéricos com padrão PT-BR.
+- Aplicar máscara em valores monetários, percentuais, quantidade e outros campos numéricos do formulário admin.
 
 ---
 

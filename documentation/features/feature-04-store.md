@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma  
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL + Prisma + Zod | ngx-mask (frontend)
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature implementa a loja de afiliados (listagem + detalhe), consumindo backend Node.js com dados persistidos no Supabase.
@@ -84,6 +84,8 @@ Retorna lista de tags para filtros.
 2. Paginação obrigatória nas listagens.
 3. Resposta de detalhe sempre ordenada por `Media.order`.
 4. Links afiliados devem ser retornados prontos para abertura em nova aba.
+5. Validar query params (`search`, `tags`, `sort`, `page`, `pageSize`) com Zod.
+6. Campos numéricos no frontend (ex.: faixas de valor, quantidade, paginação digitável) devem usar `ngx-mask` com formato PT-BR.
 
 ---
 

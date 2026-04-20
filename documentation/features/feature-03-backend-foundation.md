@@ -4,7 +4,7 @@
 
 Este é o projeto **Landing Page Pessoal + Loja de Afiliados** de Rafael Xavier.
 
-**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL (via MCP) | Prisma  
+**Stack:** Angular (última versão) | Node.js (TypeScript) em Vercel Functions | Supabase PostgreSQL (via MCP) | Prisma | Zod  
 **Arquitetura:** Modular Monolith + Vertical Slice
 
 Esta feature configura o backend da aplicação. Ela é necessária quando a Loja (Feature 04) passa a depender de dados dinâmicos. O MVP estático (Landing, Galeria, Linktree) **não depende** desta feature.
@@ -18,6 +18,7 @@ Criar a fundação do backend com:
 - API Node.js/TypeScript publicada na Vercel (`/api/*`)
 - Conexão com Supabase PostgreSQL
 - Prisma ORM com schema e migrations
+- Zod para validação de payloads (body/query/params)
 - Autenticação JWT
 - CORS para o frontend
 - Seed de usuário admin
@@ -134,6 +135,7 @@ enum AspectRatio {
 2. Instalar e configurar pacotes principais:
    - `prisma`
    - `@prisma/client`
+   - `zod`
    - `bcryptjs`
    - `jose` (JWT)
 3. Configurar `schema.prisma` e gerar primeira migration.
@@ -145,12 +147,14 @@ enum AspectRatio {
    - `GET /api/health`
    - `POST /api/auth/login`
    - `GET /api/auth/me` (protegido)
-7. Configurar CORS e validação de ambiente.
+7. Configurar CORS, validação de ambiente e validação de payload com Zod.
 8. Publicar backend na Vercel.
 
 ---
 
 ## Endpoints desta Feature
+
+> Todos os endpoints devem validar `body`, `query` e `params` com schemas Zod antes de acessar regras de negócio.
 
 ### GET /api/health
 
@@ -216,6 +220,7 @@ enum AspectRatio {
 - [ ] `POST /api/auth/login` retorna JWT válido
 - [ ] `GET /api/auth/me` exige token válido
 - [ ] CORS permite chamadas do frontend publicado
+- [ ] Payloads inválidos retornam 400 com erro padronizado de validação
 
 ---
 

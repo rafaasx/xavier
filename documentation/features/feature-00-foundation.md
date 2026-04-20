@@ -11,6 +11,7 @@ Este é o primeiro passo do projeto **Landing Page Pessoal + Loja de Afiliados**
 | Camada | Tecnologia |
 |--------|-----------|
 | Frontend | Angular (última versão) |
+| Frontend (máscaras) | ngx-mask (formatação numérica PT-BR) |
 
 > Backend (Node.js + Prisma) e banco (Supabase PostgreSQL) serão configurados na Feature 03.
 
@@ -48,9 +49,10 @@ Criar a estrutura inicial do frontend com:
 2. Configurar estrutura de pastas (`core/`, `shared/`, `features/`, `layout/`)
 3. Configurar roteamento base com lazy loading
 4. Instalar dependências iniciais (ex: Angular Material ou lib de UI, se necessário)
-5. Configurar environment files (preparar para futura API URL)
-6. Criar componente de layout base (header + footer + router-outlet)
-7. Configurar rotas iniciais:
+5. Instalar e configurar `ngx-mask` globalmente para máscaras numéricas PT-BR
+6. Configurar environment files (preparar para futura API URL)
+7. Criar componente de layout base (header + footer + router-outlet)
+8. Configurar rotas iniciais:
    - `/` → Landing (Feature 01)
    - `/links` → Linktree (Feature 01)
    - `/store` → Loja (Feature 04, lazy loaded, placeholder por agora)
@@ -64,6 +66,7 @@ Criar a estrutura inicial do frontend com:
 - **Código modular** — cada feature isolada em sua pasta
 - **Baixa complexidade** — fácil de entender e manter
 - **Standalone components** — preferir standalone quando possível (Angular moderno)
+- **Máscaras padronizadas** — usar `ngx-mask` em campos de número com padrão PT-BR
 
 ---
 

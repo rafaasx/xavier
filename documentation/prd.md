@@ -10,6 +10,8 @@
 * Frontend: Angular (última versão)
 * Backend: Node.js (TypeScript) em Vercel Functions
 * ORM: Prisma (padrão da comunidade Node.js)
+* Validação backend: Zod
+* Máscaras frontend: ngx-mask (padrão PT-BR para campos numéricos)
 * Banco: Supabase PostgreSQL (provisionado e gerenciado via MCP)
 * Arquitetura: Modular Monolith + Vertical Slice
 
@@ -27,7 +29,7 @@ A aplicação também deve contar com uma área administrativa protegida por aut
 
 Além disso, deve existir uma página pública separada da landing principal, no estilo de ferramentas como Linktree ou Hopp, contendo uma versão simplificada com links diretos para minhas redes sociais, para a própria landing page e para a loja, funcionando como um ponto rápido de acesso para compartilhamento.
 
-Do ponto de vista técnico, a aplicação deve ser construída utilizando Angular em sua versão mais recente no frontend, Node.js com TypeScript no backend e Supabase PostgreSQL como banco de dados (operado via MCP). O backend deve usar Prisma como ORM para modelagem, migrations e acesso aos dados. A arquitetura deve ser simples e eficiente, evitando abordagens complexas como Clean Architecture, priorizando organização por funcionalidades e facilidade de manutenção. O objetivo é construir um sistema enxuto, escalável e focado em entrega rápida de valor, que possa evoluir gradualmente conforme novas necessidades surgirem.
+Do ponto de vista técnico, a aplicação deve ser construída utilizando Angular em sua versão mais recente no frontend, Node.js com TypeScript no backend e Supabase PostgreSQL como banco de dados (operado via MCP). O backend deve usar Prisma como ORM para modelagem, migrations e acesso aos dados, e Zod para validação de payloads e contratos de entrada/saída nos endpoints. No frontend, deve ser adotada a biblioteca ngx-mask para campos numéricos com formatação PT-BR. A arquitetura deve ser simples e eficiente, evitando abordagens complexas como Clean Architecture, priorizando organização por funcionalidades e facilidade de manutenção. O objetivo é construir um sistema enxuto, escalável e focado em entrega rápida de valor, que possa evoluir gradualmente conforme novas necessidades surgirem.
 
 ---
 
@@ -392,6 +394,12 @@ Página pública simples com links
 
 * Angular modular
 * Lazy loading por feature
+* ngx-mask para máscaras de campos numéricos (PT-BR)
+
+## Validação e Contratos
+
+* Zod obrigatório nos endpoints backend para validar body/query/params
+* Erros de validação devem retornar resposta padronizada (400)
 
 ---
 
