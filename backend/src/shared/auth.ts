@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { webcrypto } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 
@@ -10,11 +11,18 @@ export type AuthPayload = {
   email: string;
 };
 
+function ensureWebCrypto(): void {
+  if (typeof globalThis.crypto === 'undefined') {
+    (globalThis as { crypto?: unknown }).crypto = webcrypto;
+  }
+}
+
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
 export async function signAccessToken(payload: AuthPayload): Promise<{ token: string; expiresAt: Date }> {
+  ensureWebCrypto();
   const env = getEnv();
   const expiresAt = new Date(Date.now() + env.JWT_EXPIRATION_MINUTES * 60 * 1000);
   const secret = new TextEncoder().encode(env.JWT_SECRET);
@@ -50,6 +58,7 @@ export async function requireAuth(
   req: VercelRequest,
   res: VercelResponse,
 ): Promise<AuthPayload | null> {
+  ensureWebCrypto();
   const token = extractBearerToken(req);
 
   if (!token) {
