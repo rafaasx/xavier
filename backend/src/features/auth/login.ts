@@ -3,7 +3,9 @@ import { z } from 'zod';
 
 import { signAccessToken, verifyPassword } from '../../shared/auth';
 import { prisma } from '../../shared/db';
+import { getEnv } from '../../shared/env';
 import {
+  appendSetCookieHeader,
   handlePreflight,
   internalServerError,
   jsonResponse,
@@ -58,6 +60,21 @@ export async function login(req: VercelRequest, res: VercelResponse): Promise<vo
       userId: user.id,
       email: user.email,
     });
+
+    const env = getEnv();
+    const maxAgeSeconds = env.JWT_EXPIRATION_MINUTES * 60;
+    const isHttps = req.headers['x-forwarded-proto'] === 'https';
+    const cookieSecuritySuffix = isHttps ? '; Secure' : '';
+
+    appendSetCookieHeader(
+      res,
+      `xavier_access_token=${encodeURIComponent(token)}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax; HttpOnly${cookieSecuritySuffix}`,
+    );
+
+    appendSetCookieHeader(
+      res,
+      `xavier_swagger_token=${encodeURIComponent(token)}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${cookieSecuritySuffix}`,
+    );
 
     jsonResponse(req, res, 200, {
       token,

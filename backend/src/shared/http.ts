@@ -24,8 +24,25 @@ export function applyCorsHeaders(req: VercelRequest, res: VercelResponse): void 
   const origin = resolveAllowedOrigin(req.headers.origin);
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
+}
+
+export function appendSetCookieHeader(res: VercelResponse, cookie: string): void {
+  const current = res.getHeader('Set-Cookie');
+
+  if (!current) {
+    res.setHeader('Set-Cookie', cookie);
+    return;
+  }
+
+  if (Array.isArray(current)) {
+    res.setHeader('Set-Cookie', [...current, cookie]);
+    return;
+  }
+
+  res.setHeader('Set-Cookie', [String(current), cookie]);
 }
 
 export function handlePreflight(req: VercelRequest, res: VercelResponse): boolean {

@@ -10,7 +10,8 @@ const swaggerHtml = `<!doctype html>
   <title>Xavier API Docs</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
   <style>
-    body { margin: 0; background: #0f1115; }
+    :root { color-scheme: light; }
+    body { margin: 0; background: #ffffff; }
     #swagger-ui { max-width: 1200px; margin: 0 auto; }
     .topbar { display: none; }
   </style>
@@ -19,11 +20,38 @@ const swaggerHtml = `<!doctype html>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
+    function readCookie(name) {
+      const match = document.cookie
+        .split('; ')
+        .find((item) => item.startsWith(name + '='));
+
+      if (!match) {
+        return null;
+      }
+
+      const encoded = match.substring(name.length + 1);
+      return decodeURIComponent(encoded);
+    }
+
     window.ui = SwaggerUIBundle({
       url: '/api/openapi',
       dom_id: '#swagger-ui',
       deepLinking: true,
-      persistAuthorization: true
+      persistAuthorization: true,
+      requestInterceptor: (request) => {
+        const isLoginRequest = request.url.endsWith('/api/auth/login');
+
+        if (!isLoginRequest) {
+          const token = readCookie('xavier_swagger_token');
+
+          if (token && (!request.headers || !request.headers.Authorization)) {
+            request.headers = request.headers || {};
+            request.headers.Authorization = 'Bearer ' + token;
+          }
+        }
+
+        return request;
+      }
     });
   </script>
 </body>

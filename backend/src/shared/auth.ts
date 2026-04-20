@@ -6,6 +6,9 @@ import { SignJWT, jwtVerify } from 'jose';
 import { getEnv } from './env';
 import { unauthorized } from './http';
 
+const ACCESS_TOKEN_COOKIE = 'xavier_access_token';
+const SWAGGER_TOKEN_COOKIE = 'xavier_swagger_token';
+
 export type AuthPayload = {
   userId: string;
   email: string;
@@ -54,12 +57,36 @@ function extractBearerToken(req: VercelRequest): string | null {
   return token;
 }
 
+function extractTokenFromCookies(req: VercelRequest): string | null {
+  const rawCookies = req.headers.cookie;
+
+  if (!rawCookies) {
+    return null;
+  }
+
+  const cookies = rawCookies.split(';');
+  const parsedCookies = new Map<string, string>();
+
+  for (const cookieEntry of cookies) {
+    const separatorIndex = cookieEntry.indexOf('=');
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const key = cookieEntry.slice(0, separatorIndex).trim();
+    const value = cookieEntry.slice(separatorIndex + 1).trim();
+    parsedCookies.set(key, decodeURIComponent(value));
+  }
+
+  return parsedCookies.get(ACCESS_TOKEN_COOKIE) ?? parsedCookies.get(SWAGGER_TOKEN_COOKIE) ?? null;
+}
+
 export async function requireAuth(
   req: VercelRequest,
   res: VercelResponse,
 ): Promise<AuthPayload | null> {
   ensureWebCrypto();
-  const token = extractBearerToken(req);
+  const token = extractBearerToken(req) ?? extractTokenFromCookies(req);
 
   if (!token) {
     unauthorized(req, res);
