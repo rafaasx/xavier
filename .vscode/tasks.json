@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev:backend",
+      "type": "shell",
+      "command": "node -e \"const fs=require('fs'),path=require('path'),cp=require('child_process');let p=process.cwd();while(!(fs.existsSync(path.join(p,'api'))&&fs.existsSync(path.join(p,'backend')))){const parent=path.dirname(p);if(parent===p) throw new Error('Project root not found');p=parent;}cp.execSync('npm run backend:dev',{cwd:p,stdio:'inherit'});\"",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Backend dev server running at http://localhost:3000"
+        }
+      }
+    },
+    {
+      "label": "dev:frontend",
+      "type": "shell",
+      "command": "node -e \"const fs=require('fs'),path=require('path'),cp=require('child_process');let p=process.cwd();while(!(fs.existsSync(path.join(p,'api'))&&fs.existsSync(path.join(p,'backend')))){const parent=path.dirname(p);if(parent===p) throw new Error('Project root not found');p=parent;}cp.execSync('npm --prefix frontend start -- --port 4200',{cwd:p,stdio:'inherit'});\"",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Application bundle generation complete|Watch mode enabled|Compiled successfully|Local:\\s*http://localhost:4200"
+        }
+      }
+    },
+    {
+      "label": "dev:fullstack",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "dev:backend",
+        "dev:frontend"
+      ]
+    }
+  ]
+}

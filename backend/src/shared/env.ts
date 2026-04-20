@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import dotenv from 'dotenv';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -15,12 +18,39 @@ const envSchema = z.object({
 type ParsedEnv = z.infer<typeof envSchema>;
 
 let cachedEnv: ParsedEnv | null = null;
+let envLoaded = false;
+
+export function ensureEnvLoaded(): void {
+  if (envLoaded) {
+    return;
+  }
+
+  const backendRoot = path.resolve(__dirname, '..', '..');
+  const projectRoot = path.resolve(backendRoot, '..');
+  const candidates = [
+    path.join(projectRoot, '.env.local'),
+    path.join(projectRoot, '.env'),
+    path.join(backendRoot, '.env.local'),
+    path.join(backendRoot, '.env'),
+  ];
+
+  for (const filePath of candidates) {
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
+
+    dotenv.config({ path: filePath, override: false });
+  }
+
+  envLoaded = true;
+}
 
 export function getEnv(): ParsedEnv {
   if (cachedEnv) {
     return cachedEnv;
   }
 
+  ensureEnvLoaded();
   cachedEnv = envSchema.parse(process.env);
   return cachedEnv;
 }

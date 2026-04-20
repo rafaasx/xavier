@@ -144,9 +144,11 @@ enum AspectRatio {
    - `DIRECT_URL` (migrations)
 5. Criar seed do usuário admin (senha com hash BCrypt).
 6. Implementar endpoints:
-   - `GET /api/health`
-   - `POST /api/auth/login`
-   - `GET /api/auth/me` (protegido)
+    - `GET /api/health`
+    - `POST /api/auth/login`
+    - `GET /api/auth/me` (protegido)
+    - `GET /api/openapi` (spec OpenAPI)
+    - `GET /api/docs` (Swagger UI)
 7. Configurar CORS, validação de ambiente e validação de payload com Zod.
 8. Publicar backend na Vercel.
 
@@ -195,6 +197,14 @@ enum AspectRatio {
 }
 ```
 
+### GET /api/openapi
+
+Retorna o documento OpenAPI (JSON) para tooling e documentação.
+
+### GET /api/docs
+
+Interface Swagger UI para visualização e teste dos endpoints.
+
 ---
 
 ## Deploy (Vercel + Supabase)
@@ -221,6 +231,7 @@ enum AspectRatio {
 - [ ] `GET /api/auth/me` exige token válido
 - [ ] CORS permite chamadas do frontend publicado
 - [ ] Payloads inválidos retornam 400 com erro padronizado de validação
+- [ ] `/api/docs` exibe a documentação Swagger
 
 ---
 

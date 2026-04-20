@@ -4,6 +4,7 @@
   "scripts": {
     "build": "npm --prefix frontend run build",
     "test": "npm --prefix frontend test -- --watch=false --browsers=ChromeHeadless",
+    "backend:dev": "tsx backend/src/dev-server.ts",
     "backend:typecheck": "tsc --project backend/tsconfig.json --noEmit",
     "backend:generate": "prisma generate --schema backend/prisma/schema.prisma",
     "backend:migrate:dev": "prisma migrate dev --schema backend/prisma/schema.prisma",
@@ -15,12 +16,16 @@
     "@prisma/client": "^6.6.0",
     "@vercel/node": "^5.1.12",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "jose": "^6.0.11",
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^22.15.3",
     "prisma": "^6.6.0",
+    "supabase": "^2.92.1",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }

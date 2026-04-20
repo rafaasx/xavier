@@ -1,0 +1,44 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Full Stack Backend Debug (F5)",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "dev:frontend",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "./node_modules/tsx/dist/cli.mjs",
+        "backend/src/dev-server.ts"
+      ],
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal",
+      "outputCapture": "std",
+      "sourceMaps": true,
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "name": "Frontend (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/frontend",
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack + Chrome Debug",
+      "configurations": [
+        "Full Stack Backend Debug (F5)",
+        "Frontend (Chrome)"
+      ]
+    }
+  ]
+}

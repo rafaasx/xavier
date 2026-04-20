@@ -38,18 +38,22 @@ export async function login(req: VercelRequest, res: VercelResponse): Promise<vo
     }
 
     const normalizedEmail = parsedBody.data.email.trim().toLowerCase();
+    console.log(`Attempting login for email: ${normalizedEmail}`);
+    debugger;
+    const allUsers = await prisma.user.findMany();
     const user = await prisma.user.findUnique({
       where: {
         email: normalizedEmail,
       },
     });
-
+console.log(`User lookup result for email ${normalizedEmail}:`, user);
     if (!user) {
       unauthorized(req, res);
       return;
     }
 
     const passwordMatches = await verifyPassword(parsedBody.data.password, user.passwordHash);
+    console.log(`Password verification result for email ${normalizedEmail}:`, passwordMatches);
     if (!passwordMatches) {
       unauthorized(req, res);
       return;
