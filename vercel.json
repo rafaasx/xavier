@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "installCommand": "npm install",
-  "buildCommand": "npm --prefix frontend run build",
-  "outputDirectory": "frontend/dist/frontend/browser",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/frontend/browser",
   "functions": {
     "api/**/*.ts": {
       "runtime": "nodejs22.x"
