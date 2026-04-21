@@ -1,8 +1,7 @@
 const { proxyToBackend } = require('./_shared/backend-proxy');
 
-module.exports = async function handler(req, res) {
-  if (!process.env.BACKEND_API_BASE_URL?.trim()) {
-    const swaggerHtml = `<!doctype html>
+function writeFallbackDocs(res) {
+  const swaggerHtml = `<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -29,9 +28,14 @@ module.exports = async function handler(req, res) {
 </body>
 </html>`;
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end(swaggerHtml);
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.end(swaggerHtml);
+}
+
+module.exports = async function handler(req, res) {
+  if (!process.env.BACKEND_API_BASE_URL?.trim()) {
+    writeFallbackDocs(res);
     return;
   }
 
@@ -39,10 +43,12 @@ module.exports = async function handler(req, res) {
     await proxyToBackend(req, res, 'docs');
   } catch (error) {
     console.error(error);
-    if (error instanceof Error && error.message === 'BACKEND_API_BASE_URL is not configured') {
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Backend API is not configured' }));
+    if (
+      error instanceof Error &&
+      (error.message === 'BACKEND_API_BASE_URL is not configured' ||
+        error.message === 'BACKEND_API_BASE_URL points to current frontend host')
+    ) {
+      writeFallbackDocs(res);
     } else {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');

@@ -14,10 +14,15 @@ module.exports = async function handler(req, res) {
     await proxyToBackend(req, res, 'tags');
   } catch (error) {
     console.error(error);
-    if (error instanceof Error && error.message === 'BACKEND_API_BASE_URL is not configured') {
-      res.statusCode = 500;
+    if (
+      error instanceof Error &&
+      (error.message === 'BACKEND_API_BASE_URL is not configured' ||
+        error.message === 'BACKEND_API_BASE_URL points to current frontend host')
+    ) {
+      res.statusCode = 200;
+      res.setHeader('x-xavier-data-source', 'fallback');
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Backend API is not configured' }));
+      res.end(JSON.stringify(getFallbackTags()));
     } else {
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');

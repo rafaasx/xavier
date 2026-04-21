@@ -9,6 +9,27 @@ function getBackendApiBaseUrl() {
   return value.replace(/\/+$/, '');
 }
 
+function ensureNoSelfProxyLoop(req, baseUrl) {
+  const forwardedHost = req.headers?.['x-forwarded-host'];
+  const rawHost = typeof forwardedHost === 'string' ? forwardedHost : req.headers?.host;
+  const requestHost = String(rawHost ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase();
+
+  if (!requestHost) {
+    return;
+  }
+
+  const backendUrl = new URL(baseUrl);
+  const backendHost = backendUrl.host.toLowerCase();
+  const backendPath = backendUrl.pathname.replace(/\/+$/, '');
+
+  if (backendHost === requestHost && backendPath === '/api') {
+    throw new Error('BACKEND_API_BASE_URL points to current frontend host');
+  }
+}
+
 function copyHeaders(req) {
   const headers = {};
 
@@ -40,6 +61,7 @@ async function proxyToBackend(req, res, backendPath) {
   }
 
   const baseUrl = getBackendApiBaseUrl();
+  ensureNoSelfProxyLoop(req, baseUrl);
   const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
   const targetUrl = `${baseUrl}/${backendPath}${query}`;
 
