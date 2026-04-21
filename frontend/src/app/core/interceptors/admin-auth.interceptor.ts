@@ -1,8 +1,9 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, finalize, throwError } from 'rxjs';
 
 import { AdminAuthService } from '../../features/admin/services/admin-auth.service';
+import { AdminRequestLoadingService } from '../../features/admin/services/admin-request-loading.service';
 import { runtimeEnv } from '../runtime-env';
 
 function normalizeBaseUrl(url: string): string {
@@ -24,6 +25,7 @@ export const adminAuthInterceptor: HttpInterceptorFn = (request, next) => {
   }
 
   const authService = inject(AdminAuthService);
+  const requestLoading = inject(AdminRequestLoadingService);
   const token = authService.accessToken();
   const authenticatedRequest = token
     ? request.clone({
@@ -34,6 +36,7 @@ export const adminAuthInterceptor: HttpInterceptorFn = (request, next) => {
         withCredentials: true,
       });
 
+  requestLoading.beginRequest();
   return next(authenticatedRequest).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && !request.url.endsWith('/auth/login')) {
@@ -42,6 +45,7 @@ export const adminAuthInterceptor: HttpInterceptorFn = (request, next) => {
 
       return throwError(() => error);
     }),
+    finalize(() => requestLoading.endRequest()),
   );
 };
 

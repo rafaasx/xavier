@@ -1,0 +1,62 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 9, 6, 0.72);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+}
+
+.overlay__card {
+  width: min(92vw, 430px);
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  padding: 1.2rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+}
+
+.overlay__emoji {
+  font-size: 2rem;
+  animation: bounce 0.9s ease-in-out infinite alternate;
+}
+
+.overlay__title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.overlay__subtitle {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.overlay__dots {
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  animation: pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
