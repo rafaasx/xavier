@@ -43,13 +43,8 @@ for (const envPath of envFiles) {
 
 const processApiBaseUrl = process.env.BACKEND_API_BASE_URL?.trim();
 const localOrDefaultApiBaseUrl = parsedEnv.BACKEND_API_BASE_URL || defaultApiBaseUrl;
-const isVercelProduction = process.env.VERCEL_ENV === 'production';
-const localhostPattern = /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
 
-let apiBaseUrl = processApiBaseUrl || localOrDefaultApiBaseUrl;
-if (isVercelProduction && localhostPattern.test(apiBaseUrl)) {
-  apiBaseUrl = '/api';
-}
+const apiBaseUrl = processApiBaseUrl || localOrDefaultApiBaseUrl;
 const runtimeEnvPath = resolve(frontendRoot, 'src', 'app', 'core', 'runtime-env.ts');
 
 const normalizedApiBaseUrl = apiBaseUrl.replace(/\/+$/, '');

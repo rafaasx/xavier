@@ -3,7 +3,7 @@
   "version": 2,
   "installCommand": "npm install",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/frontend/browser",
+  "outputDirectory": "frontend/dist/frontend/browser",
   "routes": [
     {
       "handle": "filesystem"
