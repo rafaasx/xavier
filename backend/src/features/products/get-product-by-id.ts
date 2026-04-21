@@ -15,6 +15,27 @@ const paramsSchema = z.object({
   id: z.string().uuid(),
 });
 
+function resolveProductId(req: VercelRequest): string | undefined {
+  const queryId = req.query?.id;
+
+  if (typeof queryId === 'string') {
+    return queryId;
+  }
+
+  if (Array.isArray(queryId) && typeof queryId[0] === 'string') {
+    return queryId[0];
+  }
+
+  const paramId = (req as VercelRequest & { params?: { id?: unknown } }).params?.id;
+  if (typeof paramId === 'string') {
+    return paramId;
+  }
+
+  const path = req.url?.split('?')[0] ?? '';
+  const lastSegment = path.split('/').filter(Boolean).pop();
+  return lastSegment;
+}
+
 export async function getProductById(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (handlePreflight(req, res)) {
     return;
@@ -26,7 +47,7 @@ export async function getProductById(req: VercelRequest, res: VercelResponse): P
   }
 
   try {
-    const parsedParams = parseWithZod(paramsSchema, req.query);
+    const parsedParams = parseWithZod(paramsSchema, { id: resolveProductId(req) });
 
     if (!parsedParams.success) {
       validationError(req, res, parsedParams.details);
