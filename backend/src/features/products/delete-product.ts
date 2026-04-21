@@ -19,7 +19,7 @@ export async function deleteProduct(req: VercelRequest, res: VercelResponse): Pr
     }
 
     const parsedParams = parseWithZod(paramsSchema, { id: resolveRouteParam(req, 'id') });
-    if (!parsedParams.success) {
+    if (parsedParams.success === false) {
       validationError(req, res, parsedParams.details);
       return;
     }

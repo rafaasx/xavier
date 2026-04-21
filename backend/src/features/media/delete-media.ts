@@ -19,7 +19,7 @@ export async function deleteMedia(req: VercelRequest, res: VercelResponse): Prom
     }
 
     const parsedParams = parseWithZod(paramsSchema, { id: resolveRouteParam(req, 'id') });
-    if (!parsedParams.success) {
+    if (parsedParams.success === false) {
       validationError(req, res, parsedParams.details);
       return;
     }

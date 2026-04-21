@@ -36,7 +36,7 @@ export async function getProducts(req: VercelRequest, res: VercelResponse): Prom
   try {
     const parsedQuery = parseWithZod(querySchema, normalizeQuery(req.query));
 
-    if (!parsedQuery.success) {
+    if (parsedQuery.success === false) {
       validationError(req, res, parsedQuery.details);
       return;
     }

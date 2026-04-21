@@ -26,14 +26,14 @@ export async function createProductMedia(req: VercelRequest, res: VercelResponse
     }
 
     const parsedParams = parseWithZod(paramsSchema, { id: resolveRouteParam(req, 'id') });
-    if (!parsedParams.success) {
+    if (parsedParams.success === false) {
       validationError(req, res, parsedParams.details);
       return;
     }
 
     const body = await readJsonBody(req);
     const parsedBody = parseWithZod(payloadSchema, body);
-    if (!parsedBody.success) {
+    if (parsedBody.success === false) {
       validationError(req, res, parsedBody.details);
       return;
     }

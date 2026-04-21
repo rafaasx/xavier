@@ -19,7 +19,7 @@ export async function deleteTag(req: VercelRequest, res: VercelResponse): Promis
     }
 
     const parsedParams = parseWithZod(paramsSchema, { id: resolveRouteParam(req, 'id') });
-    if (!parsedParams.success) {
+    if (parsedParams.success === false) {
       validationError(req, res, parsedParams.details);
       return;
     }

@@ -34,7 +34,7 @@ export async function login(req: VercelRequest, res: VercelResponse): Promise<vo
     const body = await readJsonBody(req);
     const parsedBody = parseWithZod(loginSchema, body);
 
-    if (!parsedBody.success) {
+    if (parsedBody.success === false) {
       validationError(req, res, parsedBody.details);
       return;
     }

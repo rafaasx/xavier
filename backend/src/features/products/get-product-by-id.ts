@@ -49,7 +49,7 @@ export async function getProductById(req: VercelRequest, res: VercelResponse): P
   try {
     const parsedParams = parseWithZod(paramsSchema, { id: resolveProductId(req) });
 
-    if (!parsedParams.success) {
+    if (parsedParams.success === false) {
       validationError(req, res, parsedParams.details);
       return;
     }

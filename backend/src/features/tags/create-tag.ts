@@ -19,7 +19,7 @@ export async function createTag(req: VercelRequest, res: VercelResponse): Promis
 
     const body = await readJsonBody(req);
     const parsedBody = parseWithZod(payloadSchema, body);
-    if (!parsedBody.success) {
+    if (parsedBody.success === false) {
       validationError(req, res, parsedBody.details);
       return;
     }
