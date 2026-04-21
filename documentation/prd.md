@@ -390,6 +390,44 @@ Página pública simples com links
 * Variáveis de ambiente configuradas na Vercel (`DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`)
 * Execução de migrations Prisma no pipeline de deploy
 
+### Padrão oficial deste projeto (Monodeploy Vercel)
+
+Para evitar regressões de deploy no monorepo, este projeto deve seguir o padrão abaixo:
+
+* **Root Directory (Vercel Project Settings):** `.`
+* **Build Command:** `npm run build`
+* **Output Directory:** `frontend/dist/frontend/browser`
+* **`vercel.json` deve ficar na raiz do repositório** (mesmo nível de `package.json` raiz)
+
+### Regras de roteamento obrigatórias
+
+* Rotas de API não podem cair no fallback SPA.
+* O fallback para `index.html` deve excluir por regex todo prefixo `/api`.
+* Regra padrão recomendada no `vercel.json` para SPA:
+  * `src: "/((?!api(?:/|$)).*)"` -> `dest: "/index.html"`
+* Com essa regra, endpoints novos e rotas dinâmicas do backend em `/api/*` funcionam sem adicionar rewrites por endpoint.
+
+### Regras de ambiente (evitar loops e falso positivo)
+
+* **Monodeploy (frontend e backend no mesmo host):**
+  * não depender de `BACKEND_API_BASE_URL` para produção;
+  * frontend deve consumir API em mesma origem (`/api`).
+* **Deploy separado (frontend e backend em projetos diferentes):**
+  * `BACKEND_API_BASE_URL` deve apontar para a URL do backend real (ex.: `https://<backend>.vercel.app/api`);
+  * nunca apontar para o próprio frontend, para evitar loop infinito.
+* Não implementar retornos fake no frontend para mascarar indisponibilidade de backend.
+
+### Erros recorrentes e causa raiz
+
+* `No Output Directory named "browser" found`:
+  * Output Directory no dashboard está incorreto para este monorepo.
+  * Valor correto: `frontend/dist/frontend/browser`.
+* `ng: command not found` no build:
+  * dependências do frontend não foram instaladas no deploy.
+  * garantir install step que inclua `frontend` (ex.: `npm install && npm --prefix frontend install`).
+* `INFINITE_LOOP_DETECTED`:
+  * `BACKEND_API_BASE_URL` apontando para o próprio host do frontend.
+
 ## Frontend
 
 * Angular modular
