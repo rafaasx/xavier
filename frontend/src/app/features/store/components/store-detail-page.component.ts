@@ -94,6 +94,7 @@ export class StoreDetailPageComponent {
           this.isLoading.set(false);
         },
         error: (error: unknown) => {
+          console.log('Error loading product details:', error);
           const fallback = 'Nao foi possivel carregar os detalhes do produto.';
           if (error instanceof HttpErrorResponse && typeof error.error?.error === 'string') {
             this.errorMessage.set(error.error.error);
