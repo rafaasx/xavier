@@ -1,5 +1,6 @@
 const { getPool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
+const { getFallbackProducts } = require('../_shared/store-fallback');
 
 const allowedSort = new Set(['recent', 'name_asc', 'name_desc']);
 
@@ -114,7 +115,8 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     console.error(error);
     if (error instanceof Error && error.message === 'DATABASE_URL is not configured') {
-      json(res, 500, { error: 'Database is not configured' });
+      res.setHeader('x-xavier-data-source', 'fallback');
+      json(res, 200, getFallbackProducts(req.query ?? {}));
       return;
     }
     json(res, 500, { error: 'Internal server error' });
