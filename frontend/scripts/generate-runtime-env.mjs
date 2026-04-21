@@ -9,7 +9,9 @@ const repoRoot = resolve(frontendRoot, '..');
 
 const defaultApiBaseUrl = 'http://localhost:3000/api';
 const envFiles = [
+  resolve(repoRoot, '.env.dev'),
   resolve(repoRoot, '.env'),
+  resolve(frontendRoot, '.env.dev'),
   resolve(frontendRoot, '.env'),
 ];
 
