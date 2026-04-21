@@ -1,6 +1,13 @@
 const { proxyToBackend } = require('./_shared/backend-proxy');
 
 module.exports = async function handler(req, res) {
+  if (!process.env.BACKEND_API_BASE_URL?.trim()) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({ status: 'healthy' }));
+    return;
+  }
+
   try {
     await proxyToBackend(req, res, 'health');
   } catch (error) {
