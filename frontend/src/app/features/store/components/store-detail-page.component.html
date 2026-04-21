@@ -1,0 +1,54 @@
+<section class="store-detail-page">
+  <a class="back-link" routerLink="/store">← Voltar para a loja</a>
+
+  @if (isLoading()) {
+    <p class="muted">Carregando produto...</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="error">{{ message }}</p>
+    } @else {
+      @if (product(); as item) {
+        <article class="detail-card">
+          <header class="detail-header">
+            <span class="eyebrow">Detalhes do produto</span>
+            <h1>{{ item.name }}</h1>
+            <p class="short-description">{{ item.shortDescription }}</p>
+          </header>
+
+          <p class="long-description">{{ item.longDescription }}</p>
+
+          @if (medias().length) {
+            <section class="media-grid" aria-label="Midias do produto">
+              @for (media of medias(); track trackByMediaId($index, media)) {
+                <app-media-renderer [media]="media" />
+              }
+            </section>
+          }
+
+          @if (item.tags.length) {
+            <section class="tags" aria-label="Tags do produto">
+              @for (tag of item.tags; track trackByTagId($index, tag)) {
+                <span>{{ tag.name }}</span>
+              }
+            </section>
+          }
+
+          <section class="affiliate-links" aria-label="Links afiliados">
+            <h2>Onde comprar</h2>
+            @if (!item.affiliateLinks.length) {
+              <p class="muted">Nenhum link disponivel para este produto.</p>
+            } @else {
+              <div class="link-grid">
+                @for (link of item.affiliateLinks; track trackByLinkId($index, link)) {
+                  <a [href]="link.url" target="_blank" rel="noopener noreferrer nofollow">
+                    {{ link.platform }}
+                  </a>
+                }
+              </div>
+            }
+          </section>
+        </article>
+      }
+    }
+  }
+</section>

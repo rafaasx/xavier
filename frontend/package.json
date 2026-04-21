@@ -3,9 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node ./scripts/generate-runtime-env.mjs",
     "start": "ng serve",
+    "prebuild": "node ./scripts/generate-runtime-env.mjs",
     "build": "ng build",
+    "prewatch": "node ./scripts/generate-runtime-env.mjs",
     "watch": "ng build --watch --configuration development",
+    "pretest": "node ./scripts/generate-runtime-env.mjs",
     "test": "ng test"
   },
   "private": true,
@@ -24,6 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
+    "ngx-mask": "^17.1.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

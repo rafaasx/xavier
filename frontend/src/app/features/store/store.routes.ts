@@ -2,18 +2,23 @@ import { Routes } from '@angular/router';
 
 export const STORE_ROUTES: Routes = [
   {
-    path: '',
-    loadComponent: () =>
-      import('./store-placeholder.component').then((m) => m.StorePlaceholderComponent),
-  },
-  {
     path: 'catalog',
-    loadComponent: () =>
-      import('./store-placeholder.component').then((m) => m.StorePlaceholderComponent),
+    pathMatch: 'full',
+    redirectTo: '',
   },
   {
     path: 'orders',
+    pathMatch: 'full',
+    redirectTo: '',
+  },
+  {
+    path: '',
     loadComponent: () =>
-      import('./store-placeholder.component').then((m) => m.StorePlaceholderComponent),
+      import('./components/store-list-page.component').then((m) => m.StoreListPageComponent),
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./components/store-detail-page.component').then((m) => m.StoreDetailPageComponent),
   },
 ];

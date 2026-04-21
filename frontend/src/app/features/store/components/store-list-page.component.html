@@ -1,0 +1,117 @@
+<section class="store-page">
+  <header class="store-header">
+    <span class="eyebrow">Loja</span>
+    <h1>Produtos recomendados</h1>
+    <p>Filtre por tema e encontre equipamentos, acessorios e itens usados nas aventuras.</p>
+  </header>
+
+  <section class="store-filters" aria-label="Filtros da loja">
+    <div class="filter-row">
+      <label for="store-search">Busca</label>
+      <input id="store-search" type="search" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)"
+        placeholder="Ex.: barraca, iluminacao, camera..." />
+    </div>
+
+    <div class="filter-row">
+      <label for="store-sort">Ordenacao</label>
+      <select id="store-sort" [ngModel]="selectedSort()" (ngModelChange)="selectedSort.set($event)">
+        @for (option of sortOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button type="button" class="button" (click)="applyFilters()">Aplicar filtros</button>
+      <button type="button" class="button button--ghost" (click)="clearFilters()">Limpar</button>
+    </div>
+  </section>
+
+  <section class="tags-filter" aria-label="Tags">
+    @if (isLoadingTags()) {
+    <p class="muted">Carregando tags...</p>
+    } @else if (!tags().length) {
+    <p class="muted">Sem tags disponiveis.</p>
+    } @else {
+    <div class="tag-grid">
+      @for (tag of tags(); track trackByTagId($index, tag)) {
+      <label class="tag-pill">
+        <input type="checkbox" [checked]="isTagSelected(tag.id)"
+          (change)="toggleTagSelection(tag.id, $any($event.target).checked)" />
+        <span>{{ tag.name }}</span>
+      </label>
+      }
+    </div>
+    }
+  </section>
+
+  @if (errorMessage(); as message) {
+  <p class="error">{{ message }}</p>
+  }
+
+  @if (isLoadingProducts()) {
+  <p class="muted">Carregando produtos...</p>
+  } @else if (!products().length) {
+  <p class="muted">Nenhum produto encontrado para os filtros selecionados.</p>
+  } @else {
+  <section class="results-header" aria-label="Resumo da busca">
+    <p><strong>{{ totalCount() }}</strong> produtos encontrados</p>
+    <p>Pagina {{ currentPage() }} de {{ totalPages() }}</p>
+  </section>
+
+  <section class="product-grid" aria-label="Lista de produtos">
+    @for (product of products(); track trackByProductId($index, product)) {
+    <article class="product-card">
+      <a class="card-image" [routerLink]="['/store', product.id]">
+        @if (product.mainImage) {
+        <img [src]="product.mainImage" [alt]="product.name" loading="lazy" decoding="async" />
+        } @else {
+        <span>Sem imagem</span>
+        }
+      </a>
+
+      <div class="card-content">
+        <h2>
+          <a [routerLink]="['/store', product.id]">{{ product.name }}</a>
+        </h2>
+        <p>{{ product.shortDescription }}</p>
+
+        @if (product.tags.length) {
+        <div class="card-tags">
+          @for (tag of product.tags; track tag.id) {
+          <span>{{ tag.name }}</span>
+          }
+        </div>
+        }
+
+        <a class="details-link" [routerLink]="['/store', product.id]">Ver detalhes</a>
+      </div>
+    </article>
+    }
+  </section>
+  }
+
+  <section class="pagination" aria-label="Paginacao da loja">
+    <div class="pagination-controls">
+      <button type="button" class="button button--ghost" (click)="goToPreviousPage()" [disabled]="currentPage() <= 1">
+        Anterior
+      </button>
+      <button type="button" class="button button--ghost" (click)="goToNextPage()"
+        [disabled]="currentPage() >= totalPages()">
+        Proxima
+      </button>
+    </div>
+
+    <label for="store-page-input" class="pagination-input">
+      Pagina
+      <input id="store-page-input" type="text" mask="separator.0" thousandSeparator="." [ngModel]="pageInput()"
+        (ngModelChange)="pageInput.set($event)" (blur)="applyPageInput()" />
+    </label>
+
+    <label for="store-page-size-input" class="pagination-input">
+      Itens por pagina
+      <input id="store-page-size-input" type="text" mask="separator.0" thousandSeparator="." [ngModel]="pageSizeInput()"
+        (ngModelChange)="pageSizeInput.set($event)" (blur)="applyPageSizeInput()" />
+    </label>
+  </section>
+</section>
