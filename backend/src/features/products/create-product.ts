@@ -22,7 +22,7 @@ export async function createProduct(req: VercelRequest, res: VercelResponse): Pr
 
     const body = await readJsonBody(req);
     const parsed = parseWithZod(payloadSchema, body);
-    if (!parsed.success) {
+    if (parsed.success === false) {
       validationError(req, res, parsed.details);
       return;
     }

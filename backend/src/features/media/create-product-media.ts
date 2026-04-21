@@ -49,10 +49,27 @@ export async function createProductMedia(req: VercelRequest, res: VercelResponse
       return;
     }
 
+    const mediaPayload = parsedBody.data;
+    if (
+      !mediaPayload.url ||
+      !mediaPayload.type ||
+      !mediaPayload.aspectRatio ||
+      mediaPayload.order === undefined
+    ) {
+      validationError(req, res, {
+        formErrors: ['Payload de mídia inválido.'],
+        fieldErrors: {},
+      });
+      return;
+    }
+
     const media = await prisma.media.create({
       data: {
         productId,
-        ...parsedBody.data,
+        url: mediaPayload.url,
+        type: mediaPayload.type,
+        aspectRatio: mediaPayload.aspectRatio,
+        order: mediaPayload.order,
       },
     });
 
