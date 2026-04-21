@@ -1,4 +1,5 @@
 const { proxyToBackend } = require('../_shared/backend-proxy');
+const { getFallbackProductById } = require('../_shared/store-fallback');
 
 function resolveId(req) {
   if (typeof req.query?.id === 'string') {
@@ -15,6 +16,22 @@ module.exports = async function handler(req, res) {
     res.statusCode = 400;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify({ error: 'Validation failed', details: { fieldErrors: { id: ['Required'] } } }));
+    return;
+  }
+
+  if (!process.env.BACKEND_API_BASE_URL?.trim()) {
+    const product = getFallbackProductById(id);
+    if (!product) {
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.end(JSON.stringify({ error: 'Product not found' }));
+      return;
+    }
+
+    res.statusCode = 200;
+    res.setHeader('x-xavier-data-source', 'fallback');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify(product));
     return;
   }
 
