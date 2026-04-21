@@ -92,6 +92,7 @@ Retorna lista de tags para filtros.
 ## Deploy
 
 - API publicada no mesmo projeto da Vercel.
+- Quando frontend e backend estiverem em projetos separados, o frontend deve atuar apenas como proxy (`/api/*`) para o backend via `BACKEND_API_BASE_URL`.
 - Conexão Supabase via `DATABASE_URL`.
 - `DIRECT_URL` reservado para migrations/seed.
 - Rewrites do SPA não podem interceptar `/api/*`.

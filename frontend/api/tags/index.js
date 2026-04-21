@@ -1,32 +1,18 @@
-const { getPool } = require('../_shared/db');
-const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
-const { getFallbackTags } = require('../_shared/store-fallback');
+const { proxyToBackend } = require('../_shared/backend-proxy');
 
 module.exports = async function handler(req, res) {
-  if (handlePreflight(req, res)) {
-    return;
-  }
-
-  applyCorsHeaders(req, res);
-
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET, OPTIONS');
-    json(res, 405, { error: 'Method not allowed' });
-    return;
-  }
-
   try {
-    const pool = getPool();
-    const result = await pool.query(`SELECT id, "name" FROM "Tag" ORDER BY "name" ASC`);
-
-    json(res, 200, result.rows);
+    await proxyToBackend(req, res, 'tags');
   } catch (error) {
     console.error(error);
-    if (error instanceof Error && error.message === 'DATABASE_URL is not configured') {
-      res.setHeader('x-xavier-data-source', 'fallback');
-      json(res, 200, getFallbackTags());
-      return;
+    if (error instanceof Error && error.message === 'BACKEND_API_BASE_URL is not configured') {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.end(JSON.stringify({ error: 'Backend API is not configured' }));
+    } else {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.end(JSON.stringify({ error: 'Internal server error' }));
     }
-    json(res, 500, { error: 'Internal server error' });
   }
 };

@@ -211,7 +211,9 @@ Interface Swagger UI para visualização e teste dos endpoints.
 
 - Frontend e backend no mesmo projeto Vercel.
 - Rewrites de SPA continuam apontando para `index.html` apenas para rotas não-`/api`.
+- Se o frontend e o backend forem publicados em projetos Vercel separados (monorepo com Root Directory diferente), o frontend deve apenas fazer proxy para o backend via `BACKEND_API_BASE_URL`, sem regra de negócio ou acesso direto ao banco no frontend.
 - Variáveis de ambiente obrigatórias na Vercel:
+  - `BACKEND_API_BASE_URL` (quando frontend e backend estiverem em projetos separados)
   - `DATABASE_URL`
   - `DIRECT_URL`
   - `JWT_SECRET`
