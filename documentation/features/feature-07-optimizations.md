@@ -1,4 +1,4 @@
-# Feature 06 — Otimizações (Performance, SEO, Responsividade)
+# Feature 07 — Otimizações (Performance, SEO, Responsividade)
 
 ## Contexto
 
