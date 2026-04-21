@@ -1,0 +1,8 @@
+<nav class="menu" aria-label="Módulos administrativos">
+  @for (item of items; track item.route) {
+    <a [routerLink]="item.route" routerLinkActive="menu__link--active" class="menu__link">
+      {{ item.label }}
+    </a>
+  }
+</nav>
+

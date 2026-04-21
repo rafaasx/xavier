@@ -3,29 +3,20 @@
   <header class="topbar">
     <nav class="nav" aria-label="Principal">
       @for (item of headerLinks; track item.label) {
-        @if (item.label === 'Loja') {
-          <span class="nav__store-group">
-            <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
-              {{ item.label }}
-            </a>
-            <button type="button" class="theme-toggle theme-toggle--mobile" (click)="toggleTheme()"
-              [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
-              [attr.aria-pressed]="theme.mode() === 'light'">
-              <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
-            </button>
-          </span>
-        } @else {
-          <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
-            {{ item.label }}
-          </a>
-        }
+      <a [routerLink]="item.route" [fragment]="item.fragment" [attr.aria-label]="item.description">
+        {{ item.label }}
+      </a>
       }
     </nav>
-    <button type="button" class="theme-toggle theme-toggle--desktop" (click)="toggleTheme()"
-      [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
-      [attr.aria-pressed]="theme.mode() === 'light'">
-      <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
-    </button>
+
+    <div class="header-actions">
+      <button type="button" class="theme-toggle" (click)="toggleTheme()"
+        [attr.aria-label]="theme.mode() === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'"
+        [attr.aria-pressed]="theme.mode() === 'light'">
+        <fa-icon [icon]="theme.mode() === 'dark' ? faSun : faMoon" />
+      </button>
+      <a class="admin-access" routerLink="/admin/login" aria-label="Abrir login administrativo">Admin</a>
+    </div>
   </header>
   }
 

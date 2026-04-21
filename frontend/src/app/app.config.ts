@@ -1,13 +1,14 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideNgxMask } from 'ngx-mask';
 
 import { routes } from './app.routes';
+import { adminAuthInterceptor } from './core/interceptors/admin-auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([adminAuthInterceptor])),
     provideNgxMask(),
     provideRouter(
       routes,

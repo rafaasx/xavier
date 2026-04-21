@@ -1,0 +1,16 @@
+<section class="admin-shell">
+  <header class="admin-shell__header">
+    <div>
+      <span class="admin-shell__eyebrow">Área administrativa</span>
+      <h1>Painel Admin</h1>
+    </div>
+    <button type="button" (click)="logout()">Sair</button>
+  </header>
+
+  <app-admin-menu [items]="menuItems" />
+
+  <section class="admin-shell__content">
+    <router-outlet />
+  </section>
+</section>
+

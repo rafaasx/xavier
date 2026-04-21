@@ -1,0 +1,30 @@
+<section class="login">
+  <header class="login__header">
+    <span class="login__eyebrow">Área restrita</span>
+    <h1>Admin</h1>
+    <p>Entre com sua conta para acessar os módulos administrativos.</p>
+  </header>
+
+  <form class="login__form" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      <span>E-mail</span>
+      <input type="email" formControlName="email" autocomplete="username" />
+    </label>
+
+    <label class="field">
+      <span>Senha</span>
+      <input type="password" formControlName="password" autocomplete="current-password" />
+    </label>
+
+    @if (errorMessage(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+
+    <button type="submit" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+
+  <a class="back" routerLink="/">Voltar para o site</a>
+</section>
+

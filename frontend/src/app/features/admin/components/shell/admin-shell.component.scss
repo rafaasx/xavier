@@ -1,0 +1,51 @@
+.admin-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+
+.admin-shell__header h1 {
+  margin: 0.25rem 0 0;
+}
+
+.admin-shell__eyebrow {
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.admin-shell__header button {
+  min-height: 2.6rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-solid);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-shell__header button:hover,
+.admin-shell__header button:focus-visible {
+  border-color: var(--accent);
+}
+
+.admin-shell__content {
+  padding: 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+}
+

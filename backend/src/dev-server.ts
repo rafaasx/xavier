@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from 'express';
 
 import { login } from './features/auth/login';
+import { logout } from './features/auth/logout';
 import { me } from './features/auth/me';
 import { getOpenApi } from './features/docs/get-openapi';
 import { getSwaggerUi } from './features/docs/get-swagger-ui';
@@ -32,6 +33,7 @@ const asVercelHandler = (handler: (req: any, res: any) => Promise<void>) => {
 
 app.all('/api/health', asVercelHandler(getHealth));
 app.all('/api/auth/login', asVercelHandler(login));
+app.all('/api/auth/logout', asVercelHandler(logout));
 app.all('/api/auth/me', asVercelHandler(me));
 app.all('/api/products', asVercelHandler(getProducts));
 app.all('/api/products/:id', async (req: Request, res: Response) => {

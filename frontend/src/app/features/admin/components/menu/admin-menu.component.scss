@@ -1,0 +1,33 @@
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.menu__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--muted);
+  background: var(--surface);
+  transition: 0.2s ease;
+}
+
+.menu__link:hover,
+.menu__link:focus-visible {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.menu__link--active {
+  color: #06200f;
+  border-color: var(--accent);
+  background: var(--accent);
+  font-weight: 700;
+}
+
