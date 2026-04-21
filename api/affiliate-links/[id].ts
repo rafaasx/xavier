@@ -1,0 +1,23 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+import { deleteAffiliateLink } from '../../backend/src/features/affiliate-links/delete-affiliate-link';
+import { updateAffiliateLink } from '../../backend/src/features/affiliate-links/update-affiliate-link';
+import { handlePreflight, methodNotAllowed } from '../../backend/src/shared/http';
+
+export default function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
+  if (handlePreflight(req, res)) {
+    return Promise.resolve();
+  }
+
+  if (req.method === 'PUT') {
+    return updateAffiliateLink(req, res);
+  }
+
+  if (req.method === 'DELETE') {
+    return deleteAffiliateLink(req, res);
+  }
+
+  methodNotAllowed(req, res, ['PUT', 'DELETE', 'OPTIONS']);
+  return Promise.resolve();
+}
+

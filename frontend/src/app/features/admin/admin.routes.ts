@@ -22,34 +22,22 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'products',
         loadComponent: () =>
-          import('./components/section-placeholder/admin-section-placeholder.component').then(
-            (m) => m.AdminSectionPlaceholderComponent,
-          ),
-        data: { title: 'Gestão de produtos' },
+          import('./components/catalog/admin-catalog-page.component').then((m) => m.AdminCatalogPageComponent),
       },
       {
         path: 'medias',
         loadComponent: () =>
-          import('./components/section-placeholder/admin-section-placeholder.component').then(
-            (m) => m.AdminSectionPlaceholderComponent,
-          ),
-        data: { title: 'Gestão de mídias' },
+          import('./components/catalog/admin-catalog-page.component').then((m) => m.AdminCatalogPageComponent),
       },
       {
         path: 'tags',
         loadComponent: () =>
-          import('./components/section-placeholder/admin-section-placeholder.component').then(
-            (m) => m.AdminSectionPlaceholderComponent,
-          ),
-        data: { title: 'Gestão de tags' },
+          import('./components/catalog/admin-catalog-page.component').then((m) => m.AdminCatalogPageComponent),
       },
       {
         path: 'affiliate-links',
         loadComponent: () =>
-          import('./components/section-placeholder/admin-section-placeholder.component').then(
-            (m) => m.AdminSectionPlaceholderComponent,
-          ),
-        data: { title: 'Gestão de links afiliados' },
+          import('./components/catalog/admin-catalog-page.component').then((m) => m.AdminCatalogPageComponent),
       },
     ],
   },

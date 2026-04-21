@@ -83,6 +83,14 @@ export function unauthorized(req: VercelRequest, res: VercelResponse): void {
   jsonResponse(req, res, 401, { error: 'Unauthorized' });
 }
 
+export function notFound(req: VercelRequest, res: VercelResponse, message = 'Resource not found'): void {
+  jsonResponse(req, res, 404, { error: message });
+}
+
+export function conflict(req: VercelRequest, res: VercelResponse, message: string): void {
+  jsonResponse(req, res, 409, { error: message });
+}
+
 export function internalServerError(req: VercelRequest, res: VercelResponse): void {
   jsonResponse(req, res, 500, { error: 'Internal server error' });
 }

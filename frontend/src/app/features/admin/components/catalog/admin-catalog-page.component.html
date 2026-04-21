@@ -1,0 +1,169 @@
+<section class="catalog">
+  <aside class="catalog__products">
+    <header>
+      <h2>Produtos</h2>
+      <button type="button" (click)="prepareCreateProduct()">Novo</button>
+    </header>
+
+    @if (loading()) {
+      <p class="muted">Carregando...</p>
+    } @else if (!products().length) {
+      <p class="muted">Nenhum produto cadastrado.</p>
+    } @else {
+      <ul>
+        @for (product of products(); track product.id) {
+          <li>
+            <button
+              type="button"
+              (click)="selectProduct(product.id)"
+              [class.active]="selectedProductId() === product.id"
+            >
+              <strong>{{ product.name }}</strong>
+              <small>{{ product.shortDescription }}</small>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </aside>
+
+  <section class="catalog__editor">
+    <header class="editor__header">
+      <h2>{{ selectedProductId() ? 'Editar produto' : 'Novo produto' }}</h2>
+      @if (selectedProductId()) {
+        <button type="button" class="danger" (click)="deleteSelectedProduct()" [disabled]="saving()">
+          Excluir produto
+        </button>
+      }
+    </header>
+
+    @if (successMessage(); as success) {
+      <p class="message message--success">{{ success }}</p>
+    }
+
+    @if (errorMessage(); as error) {
+      <p class="message message--error">{{ error }}</p>
+    }
+
+    <form class="editor__form" [formGroup]="productForm" (ngSubmit)="saveProduct()">
+      <label>
+        <span>Nome</span>
+        <input type="text" formControlName="name" />
+      </label>
+
+      <label>
+        <span>Descrição curta</span>
+        <input type="text" formControlName="shortDescription" />
+      </label>
+
+      <label>
+        <span>Descrição longa</span>
+        <textarea rows="4" formControlName="longDescription"></textarea>
+      </label>
+
+      <section class="panel">
+        <h3>Tags</h3>
+        <div class="inline-form" [formGroup]="createTagForm">
+          <input type="text" formControlName="name" placeholder="Nova tag" />
+          <button type="button" [disabled]="saving()" (click)="createTag()">Criar tag</button>
+        </div>
+
+        <div class="tag-grid">
+          @for (tag of tags(); track tag.id) {
+            <label class="tag-item">
+              <span>
+                <input
+                  type="checkbox"
+                  [checked]="isSelectedTag(tag.id)"
+                  (change)="onTagCheckboxChange(tag.id, $event)"
+                />
+                {{ tag.name }}
+              </span>
+              <button type="button" class="danger danger--small" (click)="deleteTag(tag.id)">x</button>
+            </label>
+          }
+        </div>
+      </section>
+
+      <button type="submit" [disabled]="saving()">
+        {{ saving() ? 'Salvando...' : selectedProductId() ? 'Salvar alterações' : 'Criar produto' }}
+      </button>
+    </form>
+
+    @if (selectedProduct(); as product) {
+      <section class="panel">
+        <header class="panel__header">
+          <h3>Mídias</h3>
+          <button type="button" (click)="reorderMedias()">Normalizar ordem</button>
+        </header>
+
+        <form class="inline-form" [formGroup]="mediaForm" (ngSubmit)="addMedia()">
+          <input type="text" formControlName="url" placeholder="URL da mídia" />
+          <select formControlName="type">
+            @for (type of mediaTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+          <select formControlName="aspectRatio">
+            @for (ratio of aspectRatios; track ratio) {
+              <option [value]="ratio">{{ ratio }}</option>
+            }
+          </select>
+          <input type="number" min="0" formControlName="order" />
+          <button type="submit">Adicionar</button>
+        </form>
+
+        <div class="stack">
+          @for (media of product.medias; track media.id) {
+            <article class="item-card">
+              <input #mediaUrl type="text" [value]="media.url" />
+              <select #mediaType [value]="media.type">
+                @for (type of mediaTypes; track type) {
+                  <option [value]="type">{{ type }}</option>
+                }
+              </select>
+              <select #mediaRatio [value]="media.aspectRatio">
+                @for (ratio of aspectRatios; track ratio) {
+                  <option [value]="ratio">{{ ratio }}</option>
+                }
+              </select>
+              <input #mediaOrder type="number" min="0" [value]="media.order" />
+              <div class="actions">
+                <button
+                  type="button"
+                  (click)="updateMedia(media, mediaUrl.value, mediaType.value, mediaRatio.value, mediaOrder.value)"
+                >
+                  Salvar
+                </button>
+                <button type="button" class="danger" (click)="deleteMedia(media.id)">Excluir</button>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>Links afiliados</h3>
+        <form class="inline-form" [formGroup]="affiliateForm" (ngSubmit)="addAffiliateLink()">
+          <input type="text" formControlName="platform" placeholder="Plataforma" />
+          <input type="text" formControlName="url" placeholder="URL afiliada" />
+          <button type="submit">Adicionar</button>
+        </form>
+
+        <div class="stack">
+          @for (link of product.affiliateLinks; track link.id) {
+            <article class="item-card">
+              <input #platform type="text" [value]="link.platform" />
+              <input #url type="text" [value]="link.url" />
+              <div class="actions">
+                <button type="button" (click)="updateAffiliateLink(link, platform.value, url.value)">Salvar</button>
+                <button type="button" class="danger" (click)="deleteAffiliateLink(link.id)">Excluir</button>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </section>
+</section>
+
