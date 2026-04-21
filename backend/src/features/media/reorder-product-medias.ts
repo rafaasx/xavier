@@ -17,7 +17,7 @@ const itemSchema = z.object({
 });
 
 const payloadSchema = z.object({
-  items: z.array(itemSchema).min(1),
+  items: z.array(itemSchema),
 });
 
 export async function reorderProductMedias(req: VercelRequest, res: VercelResponse): Promise<void> {
@@ -37,6 +37,16 @@ export async function reorderProductMedias(req: VercelRequest, res: VercelRespon
     const parsedBody = parseWithZod(payloadSchema, body);
     if (!parsedBody.success) {
       validationError(req, res, parsedBody.details);
+      return;
+    }
+
+    if (parsedBody.data.items.length === 0) {
+      validationError(req, res, {
+        formErrors: ['Não há mídias para normalizar a ordem deste produto.'],
+        fieldErrors: {
+          items: ['Adicione pelo menos uma mídia antes de reordenar.'],
+        },
+      });
       return;
     }
 

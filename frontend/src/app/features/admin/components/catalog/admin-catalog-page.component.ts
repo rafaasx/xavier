@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -14,6 +14,8 @@ import {
   AdminTag,
 } from '../../models/admin-catalog.models';
 import { AdminCatalogService } from '../../services/admin-catalog.service';
+
+type ProductFieldName = 'name' | 'shortDescription' | 'longDescription';
 
 @Component({
   selector: 'app-admin-catalog-page',
@@ -36,6 +38,13 @@ export class AdminCatalogPageComponent {
   protected readonly saving = signal(false);
   protected readonly successMessage = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly productSearchTerm = signal('');
+  protected readonly productPage = signal(1);
+  protected readonly productPageSize = signal(10);
+  protected readonly totalProducts = signal(0);
+  protected readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.totalProducts() / this.productPageSize())),
+  );
 
   protected readonly mediaTypes: readonly AdminMediaType[] = ['IMAGE', 'YOUTUBE', 'INSTAGRAM', 'VIDEO'];
   protected readonly aspectRatios: readonly AdminMediaAspectRatio[] = ['RATIO_16_9', 'RATIO_9_16'];
@@ -99,6 +108,7 @@ export class AdminCatalogPageComponent {
   protected saveProduct(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
+      this.errorMessage.set('Revise os campos obrigatórios do produto.');
       return;
     }
 
@@ -118,7 +128,7 @@ export class AdminCatalogPageComponent {
         .subscribe({
           next: () => {
             this.successMessage.set('Produto atualizado com sucesso.');
-            this.refreshProducts(selectedId);
+            this.refreshProducts(selectedId, true);
           },
           error: (error: unknown) => this.handleRequestError(error),
         });
@@ -134,7 +144,7 @@ export class AdminCatalogPageComponent {
       .subscribe({
         next: (response) => {
           this.successMessage.set('Produto criado com sucesso.');
-          this.refreshProducts(response.id);
+          this.refreshProducts(response.id, true);
         },
         error: (error: unknown) => this.handleRequestError(error),
       });
@@ -159,7 +169,7 @@ export class AdminCatalogPageComponent {
         next: () => {
           this.successMessage.set('Produto removido com sucesso.');
           this.prepareCreateProduct();
-          this.refreshProducts();
+          this.refreshProducts(undefined, true);
         },
         error: (error: unknown) => this.handleRequestError(error),
       });
@@ -197,10 +207,11 @@ export class AdminCatalogPageComponent {
     }
 
     const { name } = this.createTagForm.getRawValue();
+    const normalizedName = name.toLocaleUpperCase('pt-BR');
     this.saving.set(true);
     this.clearMessages();
     this.service
-      .createTag(name)
+      .createTag(normalizedName)
       .pipe(
         finalize(() => this.saving.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -213,6 +224,18 @@ export class AdminCatalogPageComponent {
         },
         error: (error: unknown) => this.handleRequestError(error),
       });
+  }
+
+  protected enforceUppercaseTagName(event: Event): void {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const normalized = target.value.toLocaleUpperCase('pt-BR');
+    if (normalized !== target.value) {
+      this.createTagForm.controls.name.setValue(normalized, { emitEvent: false });
+    }
   }
 
   protected deleteTag(tagId: string): void {
@@ -347,6 +370,11 @@ export class AdminCatalogPageComponent {
       .sort((a, b) => a.order - b.order)
       .map((media, index) => ({ mediaId: media.id, order: index }));
 
+    if (items.length === 0) {
+      this.errorMessage.set('Não há mídias para normalizar. Adicione uma mídia primeiro.');
+      return;
+    }
+
     this.saving.set(true);
     this.clearMessages();
     this.service
@@ -362,6 +390,10 @@ export class AdminCatalogPageComponent {
         },
         error: (error: unknown) => this.handleRequestError(error),
       });
+  }
+
+  protected canNormalizeMedias(product: AdminProduct): boolean {
+    return !this.saving() && product.medias.length > 0;
   }
 
   protected addAffiliateLink(): void {
@@ -439,10 +471,88 @@ export class AdminCatalogPageComponent {
       });
   }
 
-  private refreshProducts(selectProductId?: string): void {
+  protected applyProductsFilter(searchValue: string): void {
+    this.productSearchTerm.set(searchValue);
+    this.productPage.set(1);
+    this.refreshProducts();
+  }
+
+  protected goToPreviousPage(): void {
+    if (this.productPage() <= 1 || this.loading()) {
+      return;
+    }
+
+    this.productPage.update((value) => value - 1);
+    this.refreshProducts();
+  }
+
+  protected goToNextPage(): void {
+    if (this.productPage() >= this.totalPages() || this.loading()) {
+      return;
+    }
+
+    this.productPage.update((value) => value + 1);
+    this.refreshProducts();
+  }
+
+  protected deleteProductFromList(productId: string): void {
+    this.saving.set(true);
+    this.clearMessages();
+    this.service
+      .deleteProduct(productId)
+      .pipe(
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          if (this.selectedProductId() === productId) {
+            this.prepareCreateProduct();
+          }
+
+          this.successMessage.set('Produto removido com sucesso.');
+          this.refreshProducts(undefined, true);
+        },
+        error: (error: unknown) => this.handleRequestError(error),
+      });
+  }
+
+  protected showProductFieldError(field: ProductFieldName): boolean {
+    const control = this.productForm.controls[field];
+    return control.invalid && control.touched;
+  }
+
+  protected getProductFieldError(field: ProductFieldName): string {
+    const control = this.productForm.controls[field];
+    if (control.hasError('required')) {
+      return 'Este campo é obrigatório.';
+    }
+
+    if (control.hasError('minlength')) {
+      return field === 'name'
+        ? 'O nome deve ter pelo menos 3 caracteres.'
+        : 'O valor informado é menor que o mínimo permitido.';
+    }
+
+    if (control.hasError('maxlength')) {
+      return field === 'name'
+        ? 'O nome deve ter no máximo 120 caracteres.'
+        : field === 'shortDescription'
+          ? 'A descrição curta deve ter no máximo 240 caracteres.'
+          : 'O valor informado é maior que o máximo permitido.';
+    }
+
+    return 'Valor inválido.';
+  }
+
+  private refreshProducts(selectProductId?: string, normalizePageIfNeeded = false): void {
     this.loading.set(true);
     this.service
-      .getProducts()
+      .getProducts({
+        search: this.productSearchTerm(),
+        page: this.productPage(),
+        pageSize: this.productPageSize(),
+      })
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -450,14 +560,33 @@ export class AdminCatalogPageComponent {
       .subscribe({
         next: (response) => {
           this.products.set(response.items);
+          this.totalProducts.set(response.totalCount);
+
+          if (normalizePageIfNeeded && response.items.length === 0 && response.totalCount > 0 && this.productPage() > 1) {
+            this.productPage.update((value) => value - 1);
+            this.refreshProducts(selectProductId, false);
+            return;
+          }
+
           if (selectProductId) {
-            this.selectProduct(selectProductId);
+            if (response.items.some((item) => item.id === selectProductId)) {
+              this.selectProduct(selectProductId);
+            } else {
+              this.selectedProductId.set(null);
+              this.selectedProduct.set(null);
+            }
             return;
           }
 
           const currentId = this.selectedProductId();
           if (currentId && response.items.some((item) => item.id === currentId)) {
             this.loadProductDetail(currentId);
+            return;
+          }
+
+          if (currentId && !response.items.some((item) => item.id === currentId)) {
+            this.selectedProductId.set(null);
+            this.selectedProduct.set(null);
           }
         },
         error: (error: unknown) => this.handleRequestError(error),

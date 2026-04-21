@@ -31,18 +31,30 @@ type AffiliatePayload = Readonly<{
   url: string;
 }>;
 
+type ProductsQuery = Readonly<{
+  search?: string;
+  page: number;
+  pageSize: number;
+}>;
+
 @Injectable({ providedIn: 'root' })
 export class AdminCatalogService {
   private readonly http = inject(HttpClient);
   private readonly apiBase = runtimeEnv.apiBaseUrl;
 
-  getProducts(): Observable<AdminProductListResponse> {
+  getProducts(query: ProductsQuery): Observable<AdminProductListResponse> {
+    const params: Record<string, string> = {
+      page: String(query.page),
+      pageSize: String(query.pageSize),
+      sort: 'recent',
+    };
+
+    if (query.search && query.search.trim().length > 0) {
+      params['search'] = query.search.trim();
+    }
+
     return this.http.get<AdminProductListResponse>(`${this.apiBase}/products`, {
-      params: {
-        page: '1',
-        pageSize: '50',
-        sort: 'recent',
-      },
+      params,
     });
   }
 

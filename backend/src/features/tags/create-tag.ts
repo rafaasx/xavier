@@ -24,7 +24,7 @@ export async function createTag(req: VercelRequest, res: VercelResponse): Promis
       return;
     }
 
-    const normalizedName = parsedBody.data.name;
+    const normalizedName = parsedBody.data.name.toLocaleUpperCase('pt-BR');
     const existingTag = await prisma.tag.findFirst({
       where: {
         name: {

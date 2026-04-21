@@ -21,9 +21,6 @@ export class AdminShellComponent {
   protected readonly requestLoading = inject(AdminRequestLoadingService);
   protected readonly menuItems: readonly AdminMenuItem[] = [
     { label: 'Produtos', route: '/admin/products' },
-    { label: 'Mídias', route: '/admin/medias' },
-    { label: 'Tags', route: '/admin/tags' },
-    { label: 'Links afiliados', route: '/admin/affiliate-links' },
   ];
 
   protected logout(): void {

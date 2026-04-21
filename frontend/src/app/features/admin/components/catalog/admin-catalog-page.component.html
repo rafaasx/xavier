@@ -5,6 +5,16 @@
       <button type="button" (click)="prepareCreateProduct()">Novo</button>
     </header>
 
+    <form class="products-search" (ngSubmit)="applyProductsFilter(searchInput.value)">
+      <input
+        #searchInput
+        type="text"
+        [value]="productSearchTerm()"
+        placeholder="Filtrar por nome"
+      />
+      <button type="submit" [disabled]="loading()">Buscar</button>
+    </form>
+
     @if (loading()) {
       <p class="muted">Carregando...</p>
     } @else if (!products().length) {
@@ -13,17 +23,37 @@
       <ul>
         @for (product of products(); track product.id) {
           <li>
-            <button
-              type="button"
-              (click)="selectProduct(product.id)"
-              [class.active]="selectedProductId() === product.id"
-            >
-              <strong>{{ product.name }}</strong>
-              <small>{{ product.shortDescription }}</small>
-            </button>
+            <article class="product-row" [class.active]="selectedProductId() === product.id">
+              <button type="button" class="product-row__select" (click)="selectProduct(product.id)">
+                <strong>{{ product.name }}</strong>
+                <small>{{ product.shortDescription }}</small>
+              </button>
+              <button
+                type="button"
+                class="danger danger--small"
+                [disabled]="saving()"
+                (click)="deleteProductFromList(product.id)"
+              >
+                x
+              </button>
+            </article>
           </li>
         }
       </ul>
+
+      <footer class="products-pagination">
+        <button type="button" (click)="goToPreviousPage()" [disabled]="loading() || productPage() <= 1">
+          Anterior
+        </button>
+        <span>Página {{ productPage() }} de {{ totalPages() }} · {{ totalProducts() }} produtos</span>
+        <button
+          type="button"
+          (click)="goToNextPage()"
+          [disabled]="loading() || productPage() >= totalPages()"
+        >
+          Próxima
+        </button>
+      </footer>
     }
   </aside>
 
@@ -48,23 +78,40 @@
     <form class="editor__form" [formGroup]="productForm" (ngSubmit)="saveProduct()">
       <label>
         <span>Nome</span>
-        <input type="text" formControlName="name" />
+        <input type="text" formControlName="name" [class.input--invalid]="showProductFieldError('name')" />
+        @if (showProductFieldError('name')) {
+          <small class="field-error">{{ getProductFieldError('name') }}</small>
+        }
       </label>
 
       <label>
         <span>Descrição curta</span>
-        <input type="text" formControlName="shortDescription" />
+        <input
+          type="text"
+          formControlName="shortDescription"
+          [class.input--invalid]="showProductFieldError('shortDescription')"
+        />
+        @if (showProductFieldError('shortDescription')) {
+          <small class="field-error">{{ getProductFieldError('shortDescription') }}</small>
+        }
       </label>
 
       <label>
         <span>Descrição longa</span>
-        <textarea rows="4" formControlName="longDescription"></textarea>
+        <textarea
+          rows="4"
+          formControlName="longDescription"
+          [class.input--invalid]="showProductFieldError('longDescription')"
+        ></textarea>
+        @if (showProductFieldError('longDescription')) {
+          <small class="field-error">{{ getProductFieldError('longDescription') }}</small>
+        }
       </label>
 
       <section class="panel">
         <h3>Tags</h3>
         <div class="inline-form" [formGroup]="createTagForm">
-          <input type="text" formControlName="name" placeholder="Nova tag" />
+          <input type="text" formControlName="name" placeholder="Nova tag" (input)="enforceUppercaseTagName($event)" />
           <button type="button" [disabled]="saving()" (click)="createTag()">Criar tag</button>
         </div>
 
@@ -94,7 +141,9 @@
       <section class="panel">
         <header class="panel__header">
           <h3>Mídias</h3>
-          <button type="button" (click)="reorderMedias()">Normalizar ordem</button>
+          <button type="button" (click)="reorderMedias()" [disabled]="!canNormalizeMedias(product)">
+            Normalizar ordem
+          </button>
         </header>
 
         <form class="inline-form" [formGroup]="mediaForm" (ngSubmit)="addMedia()">
