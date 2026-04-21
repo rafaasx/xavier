@@ -7,7 +7,7 @@ const __dirname = dirname(__filename);
 const frontendRoot = resolve(__dirname, '..');
 const repoRoot = resolve(frontendRoot, '..');
 
-const defaultApiBaseUrl = 'http://localhost:3000/api';
+const defaultApiBaseUrl = '/api';
 const envFiles = [
   resolve(repoRoot, '.env.dev'),
   resolve(repoRoot, '.env'),
@@ -41,7 +41,15 @@ for (const envPath of envFiles) {
   }
 }
 
-const apiBaseUrl = parsedEnv.BACKEND_API_BASE_URL || defaultApiBaseUrl;
+const processApiBaseUrl = process.env.BACKEND_API_BASE_URL?.trim();
+const localOrDefaultApiBaseUrl = parsedEnv.BACKEND_API_BASE_URL || defaultApiBaseUrl;
+const isVercelProduction = process.env.VERCEL_ENV === 'production';
+const localhostPattern = /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i;
+
+let apiBaseUrl = processApiBaseUrl || localOrDefaultApiBaseUrl;
+if (isVercelProduction && localhostPattern.test(apiBaseUrl)) {
+  apiBaseUrl = '/api';
+}
 const runtimeEnvPath = resolve(frontendRoot, 'src', 'app', 'core', 'runtime-env.ts');
 
 const normalizedApiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
