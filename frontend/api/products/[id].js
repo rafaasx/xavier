@@ -1,4 +1,4 @@
-const { pool } = require('../_shared/db');
+const { getPool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
 
 function resolveId(req) {
@@ -30,6 +30,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const pool = getPool();
     const productResult = await pool.query(
       `SELECT id, "name", "shortDescription", "longDescription" FROM "Product" WHERE id = $1 LIMIT 1`,
       [id],
@@ -96,6 +97,10 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error(error);
+    if (error instanceof Error && error.message === 'DATABASE_URL is not configured') {
+      json(res, 500, { error: 'Database is not configured' });
+      return;
+    }
     json(res, 500, { error: 'Internal server error' });
   }
 };

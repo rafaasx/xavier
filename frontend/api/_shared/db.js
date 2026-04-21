@@ -16,10 +16,18 @@ function createPool() {
   });
 }
 
-const pool = globalForDb.__xavierPgPool || createPool();
+function getPool() {
+  if (globalForDb.__xavierPgPool) {
+    return globalForDb.__xavierPgPool;
+  }
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForDb.__xavierPgPool = pool;
+  const pool = createPool();
+
+  if (process.env.NODE_ENV !== 'production') {
+    globalForDb.__xavierPgPool = pool;
+  }
+
+  return pool;
 }
 
-module.exports = { pool };
+module.exports = { getPool };

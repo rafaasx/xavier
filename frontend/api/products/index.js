@@ -1,4 +1,4 @@
-const { pool } = require('../_shared/db');
+const { getPool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
 
 const allowedSort = new Set(['recent', 'name_asc', 'name_desc']);
@@ -26,6 +26,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const pool = getPool();
     const search = typeof req.query.search === 'string' ? req.query.search.trim() : undefined;
     const tagsRaw = typeof req.query.tags === 'string' ? req.query.tags : '';
     const tags = tagsRaw
@@ -112,6 +113,10 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error(error);
+    if (error instanceof Error && error.message === 'DATABASE_URL is not configured') {
+      json(res, 500, { error: 'Database is not configured' });
+      return;
+    }
     json(res, 500, { error: 'Internal server error' });
   }
 };
