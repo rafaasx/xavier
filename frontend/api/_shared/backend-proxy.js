@@ -9,6 +9,12 @@ function getBackendApiBaseUrl() {
   return value.replace(/\/+$/, '');
 }
 
+function writeConfigError(res, message) {
+  res.statusCode = 500;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.end(JSON.stringify({ error: message }));
+}
+
 function ensureNoSelfProxyLoop(req, baseUrl) {
   const forwardedHost = req.headers?.['x-forwarded-host'];
   const rawHost = typeof forwardedHost === 'string' ? forwardedHost : req.headers?.host;
@@ -26,7 +32,7 @@ function ensureNoSelfProxyLoop(req, baseUrl) {
   const backendPath = backendUrl.pathname.replace(/\/+$/, '');
 
   if (backendHost === requestHost && backendPath === '/api') {
-    throw new Error('BACKEND_API_BASE_URL points to current frontend host');
+    throw new Error('BACKEND_API_BASE_URL points to current frontend host. Use the backend project URL.');
   }
 }
 
@@ -53,15 +59,33 @@ function applyResponseHeaders(source, target) {
   }
 }
 
-async function proxyToBackend(req, res, backendPath) {
-  if (req.method === 'OPTIONS') {
-    res.statusCode = 204;
-    res.end();
+function getBackendPath(req) {
+  const path = String(req.url || '').split('?')[0];
+  return path.replace(/^\/api\/?/, '');
+}
+
+async function proxyApiRequest(req, res) {
+  let baseUrl;
+
+  try {
+    baseUrl = getBackendApiBaseUrl();
+    ensureNoSelfProxyLoop(req, baseUrl);
+  } catch (error) {
+    if (error instanceof Error) {
+      writeConfigError(res, error.message);
+      return;
+    }
+
+    writeConfigError(res, 'Backend API proxy is misconfigured.');
     return;
   }
 
-  const baseUrl = getBackendApiBaseUrl();
-  ensureNoSelfProxyLoop(req, baseUrl);
+  const backendPath = getBackendPath(req);
+  if (!backendPath) {
+    writeConfigError(res, 'Cannot proxy /api root. Use a specific backend endpoint path.');
+    return;
+  }
+
   const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
   const targetUrl = `${baseUrl}/${backendPath}${query}`;
 
@@ -70,19 +94,23 @@ async function proxyToBackend(req, res, backendPath) {
     body = typeof req.body === 'string' ? req.body : req.body ? JSON.stringify(req.body) : undefined;
   }
 
-  const backendResponse = await fetch(targetUrl, {
-    method: req.method || 'GET',
-    headers: copyHeaders(req),
-    body,
-  });
+  try {
+    const backendResponse = await fetch(targetUrl, {
+      method: req.method || 'GET',
+      headers: copyHeaders(req),
+      body,
+    });
 
-  applyResponseHeaders(backendResponse.headers, res);
-  res.statusCode = backendResponse.status;
+    applyResponseHeaders(backendResponse.headers, res);
+    res.statusCode = backendResponse.status;
 
-  const responseText = await backendResponse.text();
-  res.end(responseText);
+    const responseText = await backendResponse.text();
+    res.end(responseText);
+  } catch (_error) {
+    writeConfigError(res, 'Could not reach backend API endpoint.');
+  }
 }
 
 module.exports = {
-  proxyToBackend,
+  proxyApiRequest,
 };
