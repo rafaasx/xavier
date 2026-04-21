@@ -1,4 +1,4 @@
-const { prisma } = require('../_shared/db');
+const { pool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
 
 function resolveId(req) {
@@ -30,36 +30,69 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        medias: {
-          orderBy: { order: 'asc' },
-        },
-        productTags: {
-          include: {
-            tag: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-        affiliateLinks: true,
-      },
-    });
+    const productResult = await pool.query(
+      `SELECT id, "name", "shortDescription", "longDescription" FROM "Product" WHERE id = $1 LIMIT 1`,
+      [id],
+    );
+
+    const product = productResult.rows[0];
 
     if (!product) {
       json(res, 404, { error: 'Product not found' });
       return;
     }
 
+    const [mediasResult, tagsResult, linksResult] = await Promise.all([
+      pool.query(
+        `
+          SELECT id, "productId", url, type, "aspectRatio", "order"
+          FROM "Media"
+          WHERE "productId" = $1
+          ORDER BY "order" ASC
+        `,
+        [id],
+      ),
+      pool.query(
+        `
+          SELECT t.id, t."name"
+          FROM "ProductTag" pt
+          INNER JOIN "Tag" t ON t.id = pt."tagId"
+          WHERE pt."productId" = $1
+          ORDER BY t."name" ASC
+        `,
+        [id],
+      ),
+      pool.query(
+        `
+          SELECT id, "productId", platform, url
+          FROM "AffiliateLink"
+          WHERE "productId" = $1
+          ORDER BY platform ASC
+        `,
+        [id],
+      ),
+    ]);
+
     json(res, 200, {
       id: product.id,
       name: product.name,
       shortDescription: product.shortDescription,
       longDescription: product.longDescription,
-      medias: product.medias,
-      tags: product.productTags.map((productTag) => productTag.tag),
-      affiliateLinks: product.affiliateLinks,
+      medias: mediasResult.rows.map((media) => ({
+        id: media.id,
+        productId: media.productId,
+        url: media.url,
+        type: media.type,
+        aspectRatio: media.aspectRatio,
+        order: media.order,
+      })),
+      tags: tagsResult.rows,
+      affiliateLinks: linksResult.rows.map((link) => ({
+        id: link.id,
+        productId: link.productId,
+        platform: link.platform,
+        url: link.url,
+      })),
     });
   } catch (error) {
     console.error(error);

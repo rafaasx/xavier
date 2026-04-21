@@ -1,4 +1,4 @@
-const { prisma } = require('../_shared/db');
+const { pool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
 
 module.exports = async function handler(req, res) {
@@ -15,12 +15,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const tags = await prisma.tag.findMany({
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true },
-    });
+    const result = await pool.query(`SELECT id, "name" FROM "Tag" ORDER BY "name" ASC`);
 
-    json(res, 200, tags);
+    json(res, 200, result.rows);
   } catch (error) {
     console.error(error);
     json(res, 500, { error: 'Internal server error' });

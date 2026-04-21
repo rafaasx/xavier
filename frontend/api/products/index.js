@@ -1,4 +1,4 @@
-const { prisma } = require('../_shared/db');
+const { pool } = require('../_shared/db');
 const { applyCorsHeaders, handlePreflight, json } = require('../_shared/http');
 
 const allowedSort = new Set(['recent', 'name_asc', 'name_desc']);
@@ -38,75 +38,73 @@ module.exports = async function handler(req, res) {
     const page = parsePositiveInt(req.query.page, 1);
     const pageSize = Math.min(parsePositiveInt(req.query.pageSize, 12), 50);
 
-    const where = {
-      ...(search
-        ? {
-            name: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          }
-        : {}),
-      ...(tags.length > 0
-        ? {
-            productTags: {
-              some: {
-                tagId: {
-                  in: tags,
-                },
-              },
-            },
-          }
-        : {}),
-    };
+    const params = [];
+    const whereClauses = [];
 
-    const orderBy =
-      sort === 'name_asc' ? { name: 'asc' } : sort === 'name_desc' ? { name: 'desc' } : { createdAt: 'desc' };
+    if (search) {
+      params.push(`%${search}%`);
+      whereClauses.push(`p."name" ILIKE $${params.length}`);
+    }
 
-    const [items, totalCount] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        orderBy,
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        select: {
-          id: true,
-          name: true,
-          shortDescription: true,
-          medias: {
-            where: {
-              type: 'IMAGE',
-            },
-            orderBy: {
-              order: 'asc',
-            },
-            take: 1,
-            select: {
-              url: true,
-            },
-          },
-          productTags: {
-            select: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
-        },
-      }),
-      prisma.product.count({ where }),
-    ]);
+    if (tags.length > 0) {
+      params.push(tags);
+      whereClauses.push(
+        `EXISTS (SELECT 1 FROM "ProductTag" pt WHERE pt."productId" = p.id AND pt."tagId" = ANY($${params.length}::text[]))`,
+      );
+    }
+
+    const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+    const orderBySql =
+      sort === 'name_asc' ? `p."name" ASC` : sort === 'name_desc' ? `p."name" DESC` : `p."createdAt" DESC`;
+
+    const countQuery = `SELECT COUNT(*)::int AS total FROM "Product" p ${whereSql}`;
+    const countResult = await pool.query(countQuery, params);
+    const totalCount = countResult.rows[0]?.total ?? 0;
+
+    const listParams = [...params];
+    listParams.push(pageSize);
+    const limitParam = listParams.length;
+    listParams.push((page - 1) * pageSize);
+    const offsetParam = listParams.length;
+
+    const listQuery = `
+      SELECT
+        p.id,
+        p."name",
+        p."shortDescription",
+        (
+          SELECT m.url
+          FROM "Media" m
+          WHERE m."productId" = p.id
+            AND m.type = 'IMAGE'
+          ORDER BY m."order" ASC
+          LIMIT 1
+        ) AS "mainImage",
+        COALESCE(
+          json_agg(DISTINCT jsonb_build_object('id', t.id, 'name', t."name"))
+            FILTER (WHERE t.id IS NOT NULL),
+          '[]'::json
+        ) AS tags
+      FROM "Product" p
+      LEFT JOIN "ProductTag" pt ON pt."productId" = p.id
+      LEFT JOIN "Tag" t ON t.id = pt."tagId"
+      ${whereSql}
+      GROUP BY p.id
+      ORDER BY ${orderBySql}
+      LIMIT $${limitParam}
+      OFFSET $${offsetParam}
+    `;
+
+    const listResult = await pool.query(listQuery, listParams);
 
     json(res, 200, {
-      items: items.map((item) => ({
+      items: listResult.rows.map((item) => ({
         id: item.id,
         name: item.name,
         shortDescription: item.shortDescription,
-        mainImage: item.medias[0]?.url ?? null,
-        tags: item.productTags.map((productTag) => productTag.tag),
+        mainImage: item.mainImage,
+        tags: item.tags,
       })),
       totalCount,
       page,

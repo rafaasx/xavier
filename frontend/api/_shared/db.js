@@ -1,11 +1,25 @@
-const { PrismaClient } = require('@prisma/client');
+const { Pool } = require('pg');
 
-const globalForPrisma = globalThis;
+const globalForDb = globalThis;
 
-const prisma = globalForPrisma.__xavierPrisma || new PrismaClient();
+function createPool() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL is not configured');
+  }
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.__xavierPrisma = prisma;
+  const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+
+  return new Pool({
+    connectionString,
+    ssl: isLocal ? false : { rejectUnauthorized: false },
+  });
 }
 
-module.exports = { prisma };
+const pool = globalForDb.__xavierPgPool || createPool();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForDb.__xavierPgPool = pool;
+}
+
+module.exports = { pool };
