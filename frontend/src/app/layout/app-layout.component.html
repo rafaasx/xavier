@@ -1,3 +1,5 @@
+<a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+
 <div class="shell">
   @if (showHeader()) {
   <header class="topbar">
@@ -20,7 +22,7 @@
   </header>
   }
 
-  <main class="content">
+  <main id="main-content" class="content" tabindex="-1">
     <router-outlet />
   </main>
 

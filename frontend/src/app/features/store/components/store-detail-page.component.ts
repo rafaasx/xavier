@@ -8,6 +8,7 @@ import { Media } from '../../../shared/models/media.model';
 import { MediaRendererComponent } from '../../../shared/components/media-renderer/media-renderer.component';
 import { StoreProductDetail, StoreProductMedia } from '../models/store.models';
 import { StoreApiService } from '../services/store-api.service';
+import { SeoService } from '../../../core/seo.service';
 
 @Component({
   selector: 'app-store-detail-page',
@@ -21,6 +22,7 @@ export class StoreDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly storeApi = inject(StoreApiService);
+  private readonly seo = inject(SeoService);
 
   protected readonly isLoading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -36,6 +38,12 @@ export class StoreDetailPageComponent {
   });
 
   constructor() {
+    this.seo.setPageMeta({
+      title: 'Produto | Loja Rafael Xavier',
+      description: 'Detalhes do produto recomendado por Rafael Xavier.',
+      canonicalPath: '/store',
+    });
+
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const id = params.get('id');
       if (!id) {
@@ -91,10 +99,16 @@ export class StoreDetailPageComponent {
       .subscribe({
         next: (product) => {
           this.product.set(product);
+          this.seo.setPageMeta({
+            title: `${product.name} | Loja Rafael Xavier`,
+            description: product.shortDescription,
+            keywords: `produto, loja, ${product.name}, Rafael Xavier`,
+            canonicalPath: `/store/${product.id}`,
+            type: 'article',
+          });
           this.isLoading.set(false);
         },
         error: (error: unknown) => {
-          console.log('Error loading product details:', error);
           const fallback = 'Nao foi possivel carregar os detalhes do produto.';
           if (error instanceof HttpErrorResponse && typeof error.error?.error === 'string') {
             this.errorMessage.set(error.error.error);

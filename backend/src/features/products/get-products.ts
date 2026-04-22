@@ -34,6 +34,7 @@ export async function getProducts(req: VercelRequest, res: VercelResponse): Prom
   }
 
   try {
+    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     const parsedQuery = parseWithZod(querySchema, normalizeQuery(req.query));
 
     if (parsedQuery.success === false) {

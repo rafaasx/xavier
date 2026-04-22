@@ -9,6 +9,7 @@ import { RouterLink } from '@angular/router';
 
 import { ThemeService } from '../../core/theme.service';
 import { brand, linktreeLinks } from '../../core/site-data';
+import { SeoService } from '../../core/seo.service';
 
 @Component({
   selector: 'app-linktree',
@@ -20,6 +21,7 @@ import { brand, linktreeLinks } from '../../core/site-data';
 })
 export class LinktreeComponent {
   protected readonly theme = inject(ThemeService);
+  private readonly seo = inject(SeoService);
   protected readonly faSun = faSun;
   protected readonly faMoon = faMoon;
   protected readonly brand = brand;
@@ -39,6 +41,15 @@ export class LinktreeComponent {
             : faHouse
     ) as IconProp,
   }));
+
+  constructor() {
+    this.seo.setPageMeta({
+      title: 'Rafael Xavier | Linktree',
+      description: 'Acesso rápido para redes sociais, loja e site principal de Rafael Xavier.',
+      keywords: 'linktree, redes sociais, loja, Rafael Xavier',
+      canonicalPath: '/links',
+    });
+  }
 
   protected toggleTheme(): void {
     this.theme.toggle();

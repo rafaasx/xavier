@@ -1,6 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { PreloadAllModules, provideRouter, withInMemoryScrolling, withPreloading } from '@angular/router';
 import { provideNgxMask } from 'ngx-mask';
 
 import { routes } from './app.routes';
@@ -12,6 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideNgxMask(),
     provideRouter(
       routes,
+      withPreloading(PreloadAllModules),
       withInMemoryScrolling({
         anchorScrolling: 'enabled',
         scrollPositionRestoration: 'top',

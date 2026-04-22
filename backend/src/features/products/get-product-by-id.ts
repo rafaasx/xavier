@@ -47,6 +47,7 @@ export async function getProductById(req: VercelRequest, res: VercelResponse): P
   }
 
   try {
+    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
     const parsedParams = parseWithZod(paramsSchema, { id: resolveProductId(req) });
 
     if (parsedParams.success === false) {

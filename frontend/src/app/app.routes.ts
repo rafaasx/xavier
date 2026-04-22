@@ -33,7 +33,13 @@ export const routes: Routes = [
       import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
   {
+    path: '404',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  },
+  {
     path: '**',
-    redirectTo: 'landing',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
   },
 ];

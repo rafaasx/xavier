@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { StoreProductCard, StoreSort, StoreTag } from '../models/store.models';
 import { StoreApiService } from '../services/store-api.service';
+import { SeoService } from '../../../core/seo.service';
 
 type SortOption = Readonly<{ value: StoreSort; label: string }>;
 
@@ -21,6 +22,7 @@ type SortOption = Readonly<{ value: StoreSort; label: string }>;
 export class StoreListPageComponent {
   private readonly storeApi = inject(StoreApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly seo = inject(SeoService);
 
   protected readonly sortOptions: readonly SortOption[] = [
     { value: 'recent', label: 'Mais recentes' },
@@ -48,6 +50,13 @@ export class StoreListPageComponent {
   });
 
   constructor() {
+    this.seo.setPageMeta({
+      title: 'Loja | Rafael Xavier',
+      description:
+        'Catálogo de produtos recomendados por Rafael Xavier com filtros por nome, tags e paginação.',
+      keywords: 'loja, recomendações, produtos, afiliados, Rafael Xavier',
+      canonicalPath: '/store',
+    });
     this.loadTags();
     this.loadProducts();
   }

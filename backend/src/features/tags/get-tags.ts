@@ -14,6 +14,7 @@ export async function getTags(req: VercelRequest, res: VercelResponse): Promise<
   }
 
   try {
+    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=3600');
     const tags = await prisma.tag.findMany({
       orderBy: {
         name: 'asc',
