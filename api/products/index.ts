@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-import { createProduct } from '../../backend/src/features/products/create-product';
 import { getProducts } from '../../backend/src/features/products/get-products';
 import { handlePreflight, methodNotAllowed } from '../../backend/src/shared/http';
 import { readJsonBody } from '../../backend/src/shared/validation';
@@ -24,7 +23,9 @@ export default function handler(req: VercelRequest, res: VercelResponse): Promis
         );
       }
 
-      return createProduct(req, res);
+      return import('../../backend/src/features/products/create-product.js').then((module) =>
+        module.createProduct(req, res),
+      );
     });
   }
 

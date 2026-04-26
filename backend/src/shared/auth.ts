@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import bcrypt from 'bcryptjs';
-import { SignJWT, jwtVerify } from 'jose';
 
 import { getEnv } from './env';
 import { unauthorized } from './http';
 
 const ACCESS_TOKEN_COOKIE = 'xavier_access_token';
 const SWAGGER_TOKEN_COOKIE = 'xavier_swagger_token';
+let bcryptModulePromise: Promise<typeof import('bcryptjs')> | null = null;
+let joseModulePromise: Promise<typeof import('jose')> | null = null;
 
 export type AuthPayload = {
   userId: string;
@@ -26,12 +26,45 @@ async function ensureWebCrypto(): Promise<void> {
   (globalThis as { crypto?: unknown }).crypto = cryptoModule.webcrypto;
 }
 
+async function getBcryptModule(): Promise<typeof import('bcryptjs')> {
+  if (!bcryptModulePromise) {
+    bcryptModulePromise = import('bcryptjs');
+  }
+
+  return bcryptModulePromise;
+}
+
+async function getJoseModule(): Promise<typeof import('jose')> {
+  await ensureWebCrypto();
+  if (!joseModulePromise) {
+    joseModulePromise = import('jose');
+  }
+
+  return joseModulePromise;
+}
+
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+  const bcrypt = await getBcryptModule();
+  const bcryptAny = bcrypt as unknown as {
+    compare?: (plain: string, hashed: string) => Promise<boolean>;
+    default?: { compare?: (plain: string, hashed: string) => Promise<boolean> };
+  };
+  const compare =
+    typeof bcryptAny.compare === 'function'
+      ? bcryptAny.compare.bind(bcryptAny)
+      : typeof bcryptAny.default?.compare === 'function'
+        ? bcryptAny.default.compare.bind(bcryptAny.default)
+        : null;
+
+  if (!compare) {
+    throw new Error('bcrypt compare function is unavailable in current runtime.');
+  }
+
+  return compare(password, hash);
 }
 
 export async function signAccessToken(payload: AuthPayload): Promise<{ token: string; expiresAt: Date }> {
-  await ensureWebCrypto();
+  const { SignJWT } = await getJoseModule();
   const env = getEnv();
   const expiresAt = new Date(Date.now() + env.JWT_EXPIRATION_MINUTES * 60 * 1000);
   const secret = new TextEncoder().encode(env.JWT_SECRET);
@@ -91,7 +124,7 @@ export async function requireAuth(
   req: VercelRequest,
   res: VercelResponse,
 ): Promise<AuthPayload | null> {
-  await ensureWebCrypto();
+  const { jwtVerify } = await getJoseModule();
   const token = extractBearerToken(req) ?? extractTokenFromCookies(req);
 
   if (!token) {
