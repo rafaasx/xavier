@@ -23,6 +23,16 @@ const querySchema = z.object({
   pageSize: z.coerce.number().int().positive().max(50).default(12),
 });
 
+function isAuthenticatedRequest(req: VercelRequest): boolean {
+  const authorization = req.headers.authorization;
+  if (typeof authorization === 'string' && authorization.trim().length > 0) {
+    return true;
+  }
+
+  const cookieHeader = req.headers.cookie;
+  return typeof cookieHeader === 'string' && cookieHeader.includes('auth_token=');
+}
+
 export async function getProducts(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (handlePreflight(req, res)) {
     return;
@@ -34,7 +44,11 @@ export async function getProducts(req: VercelRequest, res: VercelResponse): Prom
   }
 
   try {
-    res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    if (isAuthenticatedRequest(req)) {
+      res.setHeader('Cache-Control', 'no-store');
+    } else {
+      res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    }
     const parsedQuery = parseWithZod(querySchema, normalizeQuery(req.query));
 
     if (parsedQuery.success === false) {

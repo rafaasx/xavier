@@ -15,6 +15,16 @@ const paramsSchema = z.object({
   id: z.string().uuid(),
 });
 
+function isAuthenticatedRequest(req: VercelRequest): boolean {
+  const authorization = req.headers.authorization;
+  if (typeof authorization === 'string' && authorization.trim().length > 0) {
+    return true;
+  }
+
+  const cookieHeader = req.headers.cookie;
+  return typeof cookieHeader === 'string' && cookieHeader.includes('auth_token=');
+}
+
 function resolveProductId(req: VercelRequest): string | undefined {
   const queryId = req.query?.id;
 
@@ -47,7 +57,11 @@ export async function getProductById(req: VercelRequest, res: VercelResponse): P
   }
 
   try {
-    res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
+    if (isAuthenticatedRequest(req)) {
+      res.setHeader('Cache-Control', 'no-store');
+    } else {
+      res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=600');
+    }
     const parsedParams = parseWithZod(paramsSchema, { id: resolveProductId(req) });
 
     if (parsedParams.success === false) {

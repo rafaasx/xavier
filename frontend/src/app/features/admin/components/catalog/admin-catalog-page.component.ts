@@ -417,10 +417,24 @@ export class AdminCatalogPageComponent {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: () => {
+        next: (createdLink) => {
+          this.selectedProduct.update((current) => {
+            if (!current || current.id !== productId) {
+              return current;
+            }
+
+            const alreadyExists = current.affiliateLinks.some((link) => link.id === createdLink.id);
+            if (alreadyExists) {
+              return current;
+            }
+
+            return {
+              ...current,
+              affiliateLinks: [...current.affiliateLinks, createdLink],
+            };
+          });
           this.affiliateForm.reset({ platform: '', url: '' });
           this.successMessage.set('Link afiliado adicionado com sucesso.');
-          this.loadProductDetail(productId);
         },
         error: (error: unknown) => this.handleRequestError(error),
       });

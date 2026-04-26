@@ -1,27 +1,20 @@
 import express, { type Request, type Response } from 'express';
 
-import { createAffiliateLink } from './features/affiliate-links/create-affiliate-link';
-import { deleteAffiliateLink } from './features/affiliate-links/delete-affiliate-link';
-import { updateAffiliateLink } from './features/affiliate-links/update-affiliate-link';
 import { login } from './features/auth/login';
 import { logout } from './features/auth/logout';
 import { me } from './features/auth/me';
 import { getOpenApi } from './features/docs/get-openapi';
 import { getSwaggerUi } from './features/docs/get-swagger-ui';
 import { getHealth } from './features/health/get-health';
-import { createProductMedia } from './features/media/create-product-media';
-import { deleteMedia } from './features/media/delete-media';
-import { reorderProductMedias } from './features/media/reorder-product-medias';
-import { updateMedia } from './features/media/update-media';
 import { createProduct } from './features/products/create-product';
 import { deleteProduct } from './features/products/delete-product';
 import { getProductById } from './features/products/get-product-by-id';
 import { getProducts } from './features/products/get-products';
+import { manageProductCommand } from './features/products/manage-product-command';
 import { updateProduct } from './features/products/update-product';
-import { createTag } from './features/tags/create-tag';
-import { deleteTag } from './features/tags/delete-tag';
 import { getTags } from './features/tags/get-tags';
 import { applyCorsHeaders, methodNotAllowed } from './shared/http';
+import { readJsonBody } from './shared/validation';
 
 const app = express();
 const port = 3000;
@@ -65,6 +58,13 @@ app.all('/api/products', async (req: Request, res: Response) => {
   }
 
   if (req.method === 'POST') {
+    const body = await readJsonBody(req as any);
+    (req as any).body = body;
+    if (typeof body === 'object' && body !== null && 'action' in body) {
+      await manageProductCommand(req as any, res as any);
+      return;
+    }
+
     await createProduct(req as any, res as any);
     return;
   }
@@ -90,62 +90,13 @@ app.all('/api/products/:id', async (req: Request, res: Response) => {
 
   methodNotAllowed(req as any, res as any, ['GET', 'PUT', 'DELETE', 'OPTIONS']);
 });
-app.all('/api/products/:id/medias', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  await createProductMedia(req as any, res as any);
-});
-app.all('/api/products/:id/medias/reorder', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  await reorderProductMedias(req as any, res as any);
-});
-app.all('/api/medias/:id', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  if (req.method === 'PUT') {
-    await updateMedia(req as any, res as any);
-    return;
-  }
-
-  if (req.method === 'DELETE') {
-    await deleteMedia(req as any, res as any);
-    return;
-  }
-
-  methodNotAllowed(req as any, res as any, ['PUT', 'DELETE', 'OPTIONS']);
-});
-app.all('/api/products/:id/affiliate-links', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  await createAffiliateLink(req as any, res as any);
-});
-app.all('/api/affiliate-links/:id', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  if (req.method === 'PUT') {
-    await updateAffiliateLink(req as any, res as any);
-    return;
-  }
-
-  if (req.method === 'DELETE') {
-    await deleteAffiliateLink(req as any, res as any);
-    return;
-  }
-
-  methodNotAllowed(req as any, res as any, ['PUT', 'DELETE', 'OPTIONS']);
-});
 app.all('/api/tags', async (req: Request, res: Response) => {
   if (req.method === 'GET') {
     await getTags(req as any, res as any);
     return;
   }
 
-  if (req.method === 'POST') {
-    await createTag(req as any, res as any);
-    return;
-  }
-
-  methodNotAllowed(req as any, res as any, ['GET', 'POST', 'OPTIONS']);
-});
-app.all('/api/tags/:id', async (req: Request, res: Response) => {
-  (req as any).query = { ...(req as any).query, id: req.params.id };
-  await deleteTag(req as any, res as any);
+  methodNotAllowed(req as any, res as any, ['GET', 'OPTIONS']);
 });
 app.all('/api/openapi', asVercelHandler(getOpenApi));
 app.all('/api/docs', asVercelHandler(getSwaggerUi));

@@ -37,10 +37,32 @@ type ProductsQuery = Readonly<{
   pageSize: number;
 }>;
 
+type ProductCommand =
+  | (ProductUpsertPayload & Readonly<{ action: 'create_product' }>)
+  | (ProductUpsertPayload & Readonly<{ action: 'update_product'; productId: string }>)
+  | Readonly<{ action: 'delete_product'; productId: string }>
+  | Readonly<{ action: 'create_tag'; name: string }>
+  | Readonly<{ action: 'delete_tag'; tagId: string }>
+  | (MediaPayload & Readonly<{ action: 'create_media'; productId: string }>)
+  | (MediaPayload & Readonly<{ action: 'update_media'; mediaId: string }>)
+  | Readonly<{ action: 'delete_media'; mediaId: string }>
+  | Readonly<{
+      action: 'reorder_medias';
+      productId: string;
+      items: ReadonlyArray<{ mediaId: string; order: number }>;
+    }>
+  | (AffiliatePayload & Readonly<{ action: 'create_affiliate_link'; productId: string }>)
+  | (AffiliatePayload & Readonly<{ action: 'update_affiliate_link'; affiliateLinkId: string }>)
+  | Readonly<{ action: 'delete_affiliate_link'; affiliateLinkId: string }>;
+
 @Injectable({ providedIn: 'root' })
 export class AdminCatalogService {
   private readonly http = inject(HttpClient);
   private readonly apiBase = runtimeEnv.apiBaseUrl;
+
+  private executeCommand<TResponse = void>(command: ProductCommand): Observable<TResponse> {
+    return this.http.post<TResponse>(`${this.apiBase}/products`, command);
+  }
 
   getProducts(query: ProductsQuery): Observable<AdminProductListResponse> {
     const params: Record<string, string> = {
@@ -63,15 +85,25 @@ export class AdminCatalogService {
   }
 
   createProduct(payload: ProductUpsertPayload): Observable<{ id: string }> {
-    return this.http.post<{ id: string }>(`${this.apiBase}/products`, payload);
+    return this.executeCommand<{ id: string }>({
+      action: 'create_product',
+      ...payload,
+    });
   }
 
   updateProduct(id: string, payload: ProductUpsertPayload): Observable<void> {
-    return this.http.put<void>(`${this.apiBase}/products/${id}`, payload);
+    return this.executeCommand<void>({
+      action: 'update_product',
+      productId: id,
+      ...payload,
+    });
   }
 
   deleteProduct(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiBase}/products/${id}`);
+    return this.executeCommand<void>({
+      action: 'delete_product',
+      productId: id,
+    });
   }
 
   getTags(): Observable<readonly AdminTag[]> {
@@ -79,39 +111,71 @@ export class AdminCatalogService {
   }
 
   createTag(name: string): Observable<AdminTag> {
-    return this.http.post<AdminTag>(`${this.apiBase}/tags`, { name });
+    return this.executeCommand<AdminTag>({
+      action: 'create_tag',
+      name,
+    });
   }
 
   deleteTag(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiBase}/tags/${id}`);
+    return this.executeCommand<void>({
+      action: 'delete_tag',
+      tagId: id,
+    });
   }
 
   createMedia(productId: string, payload: MediaPayload): Observable<unknown> {
-    return this.http.post(`${this.apiBase}/products/${productId}/medias`, payload);
+    return this.executeCommand({
+      action: 'create_media',
+      productId,
+      ...payload,
+    });
   }
 
   updateMedia(mediaId: string, payload: MediaPayload): Observable<void> {
-    return this.http.put<void>(`${this.apiBase}/medias/${mediaId}`, payload);
+    return this.executeCommand<void>({
+      action: 'update_media',
+      mediaId,
+      ...payload,
+    });
   }
 
   deleteMedia(mediaId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiBase}/medias/${mediaId}`);
+    return this.executeCommand<void>({
+      action: 'delete_media',
+      mediaId,
+    });
   }
 
   reorderMedias(productId: string, items: ReadonlyArray<{ mediaId: string; order: number }>): Observable<void> {
-    return this.http.put<void>(`${this.apiBase}/products/${productId}/medias/reorder`, { items });
+    return this.executeCommand<void>({
+      action: 'reorder_medias',
+      productId,
+      items,
+    });
   }
 
   createAffiliateLink(productId: string, payload: AffiliatePayload): Observable<AdminAffiliateLink> {
-    return this.http.post<AdminAffiliateLink>(`${this.apiBase}/products/${productId}/affiliate-links`, payload);
+    return this.executeCommand<AdminAffiliateLink>({
+      action: 'create_affiliate_link',
+      productId,
+      ...payload,
+    });
   }
 
   updateAffiliateLink(id: string, payload: AffiliatePayload): Observable<void> {
-    return this.http.put<void>(`${this.apiBase}/affiliate-links/${id}`, payload);
+    return this.executeCommand<void>({
+      action: 'update_affiliate_link',
+      affiliateLinkId: id,
+      ...payload,
+    });
   }
 
   deleteAffiliateLink(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiBase}/affiliate-links/${id}`);
+    return this.executeCommand<void>({
+      action: 'delete_affiliate_link',
+      affiliateLinkId: id,
+    });
   }
 }
 

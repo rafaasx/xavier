@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-import { createTag } from '../../backend/src/features/tags/create-tag';
 import { getTags } from '../../backend/src/features/tags/get-tags';
 import { handlePreflight, methodNotAllowed } from '../../backend/src/shared/http';
 
@@ -13,10 +12,6 @@ export default function handler(req: VercelRequest, res: VercelResponse): Promis
     return getTags(req, res);
   }
 
-  if (req.method === 'POST') {
-    return createTag(req, res);
-  }
-
-  methodNotAllowed(req, res, ['GET', 'POST', 'OPTIONS']);
+  methodNotAllowed(req, res, ['GET', 'OPTIONS']);
   return Promise.resolve();
 }
